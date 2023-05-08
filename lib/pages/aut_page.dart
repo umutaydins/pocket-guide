@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_guide/pages/login_or_register.dart';
 import 'package:pocket_guide/pages/login_page.dart';
 
+import 'app_page.dart';
 import 'home_page.dart';
 
 class AuthPage extends StatelessWidget {
@@ -17,16 +18,16 @@ class AuthPage extends StatelessWidget {
         builder: (context, snapshot) {
           //user is logged in
           if (snapshot.hasData) {
-            return HomePage();
+            return AppPage();
           }
 
           //user is  NOT logged in
           else {
-<<<<<<< HEAD
+
             return const LoginOrRegisterPage();
-=======
+
             return LoginOrRegisterPage();
->>>>>>> master
+
           }
         },
       ),

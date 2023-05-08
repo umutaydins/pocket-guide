@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_guide/pages/profile_page.dart';
 import 'package:pocket_guide/pages/search_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'home_page.dart';
 
@@ -12,9 +13,9 @@ class AppPage extends StatefulWidget {
 class _AppPageState extends State<AppPage> {
 
   List pages = [
-    const HomePage(),
-    const SearchPage(),
-    const ProfilePage(),
+     HomePage(),
+     SearchPage(),
+     ProfilePage(),
   ];
 
   int selectedIndex= 0;
@@ -24,10 +25,12 @@ class _AppPageState extends State<AppPage> {
     return Scaffold(
       body: pages[selectedIndex],
       bottomNavigationBar: NavigationBar(
-        destinations: const[
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+        height: 57,
+        backgroundColor : Color(0xFF222831),
+        destinations: [
+          NavigationDestination(icon: SvgPicture.asset('assets/icons/home.svg'), label: 'Home'),
+          NavigationDestination(icon: SvgPicture.asset('assets/icons/explore.svg'), label: 'Explore'),
+          NavigationDestination(icon: SvgPicture.asset('assets/icons/profile.svg'), label: 'Profile'),
         ],
         selectedIndex: selectedIndex,
         onDestinationSelected: (value){
