@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pocket_guide/colors.dart';
+
+import '../explorepage/expolere_page.dart';
+import '../homepage/home_page.dart';
+import '../profilepage/profile_page.dart';
 
 class AppPage extends StatefulWidget {
   @override
@@ -9,6 +13,15 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppPageState extends State<AppPage> {
+
+  int _selectedIndex = 0;
+  static List<Widget> _widgetOptions = <Widget>
+  [    HomePage(),    ExplorePage(),    ProfilePage(),  ];
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
 
   @override
@@ -18,7 +31,7 @@ class _AppPageState extends State<AppPage> {
         bottomNavigationBar: Container(
           color: MyColors.backGroundkColor,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
             child: GNav(
               backgroundColor: MyColors.backGroundkColor,
               color: MyColors.whiteColor,
@@ -39,9 +52,12 @@ class _AppPageState extends State<AppPage> {
                     text: 'Profile',
                   ),
                 ],
+              selectedIndex: _selectedIndex,
+              onTabChange: _onItemTapped,
             ),
           ),
         ),
+      body: _widgetOptions.elementAt(_selectedIndex),
     );
   }
 }
