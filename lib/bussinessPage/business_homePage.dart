@@ -6,7 +6,7 @@ import 'package:pocket_guide/components/colors.dart';
 
 import '../explorepage/expolere_page.dart';
 import '../homepage/home_page.dart';
-import '../usersPages/profile_page.dart';
+import '../usersPages/user_profile_page.dart';
 
 class BusinessHomePage extends StatefulWidget {
   @override

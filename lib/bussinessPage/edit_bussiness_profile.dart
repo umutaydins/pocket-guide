@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pocket_guide/bussinessPage/bussiness_profile_page.dart';
-import 'package:pocket_guide/usersPages/profile_page.dart';
+import 'package:pocket_guide/usersPages/user_profile_page.dart';
 
 import '../components/colors.dart';
 import '../signInOutAndAppPage/app_page.dart';
 
-class EditProfile extends StatefulWidget {
-  const EditProfile({Key? key}) : super(key: key);
+class BussinessEditProfile extends StatefulWidget {
+  const BussinessEditProfile({Key? key}) : super(key: key);
 
   @override
-  State<EditProfile> createState() => _EditProfileState();
+  State<BussinessEditProfile> createState() => _BussinessEditProfileState();
 }
 
-class _EditProfileState extends State<EditProfile> {
+class _BussinessEditProfileState extends State<BussinessEditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +105,7 @@ Widget changePhoto(BuildContext context) {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const UserProfilePage(),
+                      builder: (context) => const BussinessProfilePage(),
                     ),
                   );
                 },

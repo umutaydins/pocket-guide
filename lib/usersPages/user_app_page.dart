@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pocket_guide/components/colors.dart';
-import 'package:pocket_guide/usersPages/profile_page.dart';
+import 'package:pocket_guide/usersPages/user_profile_page.dart';
 
 import '../explorepage/expolere_page.dart';
 import '../homepage/home_page.dart';
@@ -18,7 +18,6 @@ class _UserAppPageState extends State<UserAppPage> {
     HomePage(),
     ExplorePage(),
     UserProfilePage(),
-    
   ];
   void _onItemTapped(int index) {
     setState(() {

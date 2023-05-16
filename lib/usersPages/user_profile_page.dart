@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pocket_guide/bussinessPage/edit_bussiness_profile.dart';
-import 'package:pocket_guide/usersPages/edit_interests.dart';
-import 'package:pocket_guide/usersPages/edit_profile.dart';
-import 'package:pocket_guide/usersPages/edit_interests.dart';
+import 'package:pocket_guide/usersPages/user_edit_interests.dart';
+import 'package:pocket_guide/usersPages/user_edit_profile.dart';
+import 'package:pocket_guide/usersPages/user_edit_interests.dart';
 import '../components/colors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class UserProfilePage extends StatefulWidget {
-  const UserProfilePage({Key? key}) : super(key: key);
+  UserProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<UserProfilePage> createState() => _UserProfilePageState();s
+  State<UserProfilePage> createState() => _UserProfilePageState();
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
@@ -146,7 +146,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => const EditProfile(),
+                                  builder: (context) => const UserEditProfile(),
                                 ),
                               );
                             },
