@@ -1,211 +1,589 @@
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:pocket_guide/components/my_button.dart';
+// import 'package:pocket_guide/components/square_tile.dart';
+// import 'package:pocket_guide/components/my_textfield.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:flutter/material.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_guide/components/my_button.dart';
-import 'package:pocket_guide/components/square_tile.dart';
-import 'package:pocket_guide/components/my_textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:pocket_guide/signInOutAndAppPage/app_page.dart';
+import 'package:pocket_guide/registerPages/bussinesRegisterPages/bussines_register.dart';
+import 'package:pocket_guide/signInOutAndAppPage/login_page.dart';
+import '../registerPages/userRegisterPage/user_register.dart';
+import '../registerPages/bussinesRegisterPages/bussines_register.dart';
+
+import '../components/colors.dart';
 
 class RegisterPage extends StatefulWidget {
-   final Function()? onTap;
-   const RegisterPage({
-    super.key,
-    required this.onTap,
-    }
-    );
+  final Function()? onTap;
 
+  const RegisterPage({
+    Key? key,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _surnameController = TextEditingController();
-  final _birthdayController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _tagsController = TextEditingController();
+  bool _selectedUser = true;
+  int _selectedPageIndex = 0;
 
-  bool _isBusinessUser = false;
-
-  List<String> _tags = [];
+  final List<Widget> _pages = [
+    UserRegisterPage(), // replace this with UserRegisterW
+    BusinessRegisterPage(), // replace this with BusinessRegisterW
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Register"),
-        ),
-        body: Form(
-          key: _formKey,
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: "Name",
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter your name";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _surnameController,
-                decoration: InputDecoration(
-                  labelText: "Surname",
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter your surname";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _birthdayController,
-                decoration: InputDecoration(
-                  labelText: "Birthday",
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter your birthday";
-                  }
-                  return null;
-                },
-              ),
-             
-             
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: "Email",
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter your email";
-                  }
-                  return null;
-                },
-              ),
-             
-             
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter your password";
-                  }
-                  return null;
-                },
-              ),
-            
-            
-             CheckboxListTile(
-                title: Text("Business User"),
-                value: _isBusinessUser,
-                onChanged: (value) {
-                   setState(() {
-                _isBusinessUser = value ?? false;
-                });
-                },
-              ),
-              
-              
-              Visibility(
-                visible: _isBusinessUser,
-                child: TextFormField(
-                  controller: _tagsController,
-                  decoration: InputDecoration(
-                    labelText: "Tags",
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _tags = value.split(",");
-                    });
-                  },
-                ),
-              ),
-              
-              ElevatedButton(
-                child: Text("Register"),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    try {
-                      final auth = FirebaseAuth.instance;
-                      final email = _emailController.text.trim();
-                      final password = _passwordController.text.trim();
-                      final result = await auth.createUserWithEmailAndPassword(
-                        email: email,
-                        password: password,
-                      );
-                      final firestoreInstance = FirebaseFirestore.instance;
-                      final user = FirebaseAuth.instance.currentUser;
-                      await firestoreInstance
-                          .collection("users")
-                          .doc(user?.uid)///???
-                          .set({
-                        "name": _nameController.text,
-                        "surname": _surnameController.text,
-                        "birthday": _birthdayController.text,
-                        "email": _emailController.text,
-                        "isBusinessUser": _isBusinessUser,
-                        "tags": _tags,
+      body: Padding(
+        padding: EdgeInsets.only(top: 71, left: 24),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 170,
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedUser = true;
+                        _selectedPageIndex = 0;
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Registered successfully!"),
-                        ),
-                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(48),
+                      ),
+                      padding: EdgeInsets.zero,
+                      elevation: 0,
+                      primary: _selectedUser
+                          ? MyColors.primaryColor
+                          : MyColors.backGroundkColor,
+                      onPrimary: _selectedUser ? Colors.white : Colors.white,
+                      side: BorderSide(
+                          color: Colors.white,
+                          width: 0,
+                          style: BorderStyle.solid),
+                    ),
+                    // child: Center(
+                    //   child: Text(
+                    //     'User',
+                    //     style: TextStyle(fontSize: 16),
+                    //   ),
+                    // ),
 
-                      Navigator.pop(context);
-                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Registration failed. "), //{e.message}
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(48),
+                                bottomLeft: Radius.circular(48),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'User',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ),
                         ),
-                      );
-                    }
-                  }
-                },
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedUser = false;
+                                _selectedPageIndex = 1;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(48),
+                                  bottomRight: Radius.circular(48),
+                                ),
+                              ),
+                              padding: EdgeInsets.zero,
+                              elevation: 0,
+                              primary: _selectedUser
+                                  ? MyColors.backGroundkColor
+                                  : MyColors.primaryColor,
+                              onPrimary:
+                                  _selectedUser ? Colors.white : Colors.white,
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(48),
+                                  bottomRight: Radius.circular(48),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Business',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // SizedBox(
+                  //   width: 170,
+                  //   height: 40,
+
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       setState(() {
+                  //         _selectedUser = false;
+                  //         _selectedPageIndex = 1;
+                  //       });
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.only(
+                  //           topRight: Radius.circular(48),
+                  //           bottomRight: Radius.circular(48),
+                  //         ),
+                  //       ),
+                  //       padding: EdgeInsets.zero,
+                  //       elevation: 0,
+                  //       primary: _selectedUser ? MyColors.backGroundkColor : MyColors.primaryColor,
+                  //       onPrimary: _selectedUser ? Colors.white : Colors.white,
+                  //       side: BorderSide(color: Colors.white, width: 0, style: BorderStyle.solid),
+                  //     ),
+                  //     child: Center(
+                  //       child: Text(
+                  //         'Business',
+                  //         style: TextStyle(fontSize: 16),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+
+                  // SizedBox(
+                  //   height: 100,
+                  // )
+                ),
+              ],
+            ),
+            Expanded(child: _pages[_selectedPageIndex]),
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Already  have an account?',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  GestureDetector(
+                    onTap: widget.onTap,
+                    child: const Text(
+                      'Login Now',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                ],
               ),
-               Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Already  have an account?',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    GestureDetector(
-                      onTap: widget.onTap,
-                      child: const Text(
-                        'Login Now',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 4,
-                      ),
-                   ],
-                  )
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
+
+// class RegisterPage extends StatefulWidget {
+//   final Function()? onTap;
+
+//   const RegisterPage({
+//     Key? key,
+//     required this.onTap,
+//   }) : super(key: key);
+
+//   @override
+//   State<RegisterPage> createState() => _RegisterPageState();
+// }
+
+// class _RegisterPageState extends State<RegisterPage> {
+//   bool _selectedUser = true;
+//   int _selectedPageIndex = 0;
+
+//   final List<Widget> _pages = [
+//     Placeholder(color: MyColors.backGroundkColor), // replace this with UserRegisterW
+//     Placeholder(color: Colors.blue), // replace this with BusinessRegisterW
+//   ];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: MyColors.backGroundkColor,
+//         title: Row(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             SizedBox(
+//               width: 170,
+//               child: ElevatedButton(
+//                 onPressed: () {
+//                   setState(() {
+//                     _selectedUser = true;
+//                     _selectedPageIndex = 0;
+//                   });
+//                 },
+//                 style: ElevatedButton.styleFrom(
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.only(
+//                       topLeft: Radius.circular(48),
+//                       bottomLeft: Radius.circular(48),
+//                     ),
+//                   ),
+//                   padding: EdgeInsets.zero,
+//                   elevation: 0,
+//                   primary: _selectedUser ? MyColors.primaryColor : MyColors.backGroundkColor,
+//                   onPrimary: _selectedUser ? Colors.white : Colors.white,
+//                   side: BorderSide(color: Colors.white, width: 0, style: BorderStyle.solid),
+                
+//                 ),
+//                 child: Center(
+//                   child: Text(
+//                     'User',
+//                     style: TextStyle(fontSize: 16),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             SizedBox(
+//               width: 170,
+//               child: ElevatedButton(
+//                 onPressed: () {
+//                   setState(() {
+//                     _selectedUser = false;
+//                     _selectedPageIndex = 1;
+//                   });
+//                 },
+//                 style: ElevatedButton.styleFrom(
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.only(
+//                       topRight: Radius.circular(48),
+//                       bottomRight: Radius.circular(48),
+//                     ),
+//                   ),
+//                   padding: EdgeInsets.zero,
+//                   elevation: 0,
+//                   primary: _selectedUser ? MyColors.backGroundkColor : MyColors.primaryColor,
+//                   onPrimary: _selectedUser ? Colors.white : Colors.white,
+//                   side: BorderSide(color: Colors.white, width: 0, style: BorderStyle.solid),
+//                 ),
+//                 child: Center(
+//                   child: Text(
+//                     'Business',
+//                     style: TextStyle(fontSize: 16),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//       body: Column(
+//         children: [
+//           Expanded(child: _pages[_selectedPageIndex]),
+//           Padding(
+//             padding: EdgeInsets.all(16.0),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 const Text(
+//                   'Already  have an account?',
+//                   style: TextStyle(color: Colors.grey),
+//                 ),
+//                 const SizedBox(
+//                   width: 4,
+//                 ),
+               
+
+//                 GestureDetector(
+//                   onTap:widget.onTap, // replace this with your function
+//                   child: const Text(
+//                     'Login Now',
+//                     style: TextStyle(color: Colors.blue),
+//                   ),
+//                 ),
+//                 const SizedBox(
+//                   width: 4,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// class RegisterPage extends StatefulWidget {
+//    final Function()? onTap;
+//    const RegisterPage({
+//     super.key,
+//     required this.onTap,
+//     }
+//     );
+
+
+//   @override
+//   _RegisterPageState createState() => _RegisterPageState();
+// }
+
+// class _RegisterPageState extends State<RegisterPage> {
+//   final _formKey = GlobalKey<FormState>();
+//   final _nameController = TextEditingController();
+//   final _surnameController = TextEditingController();
+//   final _birthdayController = TextEditingController();
+//   final _emailController = TextEditingController();
+//   final _passwordController = TextEditingController();
+//   final _tagsController = TextEditingController();
+
+//   bool _isBusinessUser = false;
+
+//   List<String> _tags = [];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBar(
+//           title: Text("Register"),
+//         ),
+//         body: Form(
+//           key: _formKey,
+//           child: ListView(
+//             padding: EdgeInsets.symmetric(horizontal: 16.0),
+//             children: [
+//               TextFormField(
+//                 controller: _nameController,
+//                 decoration: InputDecoration(
+//                   labelText: "Name",
+//                 ),
+//                 validator: (value) {
+//                   if (value!.isEmpty) {
+//                     return "Please enter your name";
+//                   }
+//                   return null;
+//                 },
+//               ),
+//               TextFormField(
+//                 controller: _surnameController,
+//                 decoration: InputDecoration(
+//                   labelText: "Surname",
+//                 ),
+//                 validator: (value) {
+//                   if (value!.isEmpty) {
+//                     return "Please enter your surname";
+//                   }
+//                   return null;
+//                 },
+//               ),
+//               TextFormField(
+//                 controller: _birthdayController,
+//                 decoration: InputDecoration(
+//                   labelText: "Birthday",
+//                 ),
+//                 validator: (value) {
+//                   if (value!.isEmpty) {
+//                     return "Please enter your birthday";
+//                   }
+//                   return null;
+//                 },
+//               ),
+             
+             
+//               TextFormField(
+//                 controller: _emailController,
+//                 decoration: InputDecoration(
+//                   labelText: "Email",
+//                 ),
+//                 validator: (value) {
+//                   if (value!.isEmpty) {
+//                     return "Please enter your email";
+//                   }
+//                   return null;
+//                 },
+//               ),
+             
+             
+//               TextFormField(
+//                 controller: _passwordController,
+//                 decoration: InputDecoration(
+//                   labelText: "Password",
+//                 ),
+//                 obscureText: true,
+//                 validator: (value) {
+//                   if (value!.isEmpty) {
+//                     return "Please enter your password";
+//                   }
+//                   return null;
+//                 },
+//               ),
+            
+            
+//              CheckboxListTile(
+//                 title: Text("Business User"),
+//                 value: _isBusinessUser,
+//                 onChanged: (value) {
+//                    setState(() {
+//                 _isBusinessUser = value ?? false;
+//                 });
+//                 },
+//               ),
+              
+              
+//               Visibility(
+//                 visible: _isBusinessUser,
+//                 child: TextFormField(
+//                   controller: _tagsController,
+//                   decoration: InputDecoration(
+//                     labelText: "Tags",
+//                   ),
+//                   onChanged: (value) {
+//                     setState(() {
+//                       _tags = value.split(",");
+//                     });
+//                   },
+//                 ),
+//               ),
+              
+//               ElevatedButton(
+//                 child: Text("Register"),
+//                 onPressed: () async {
+//                   if (_formKey.currentState!.validate()) {
+//                     try {
+//                       final auth = FirebaseAuth.instance;
+//                       final email = _emailController.text.trim();
+//                       final password = _passwordController.text.trim();
+//                       final result = await auth.createUserWithEmailAndPassword(
+//                         email: email,
+//                         password: password,
+//                       );
+//                       final firestoreInstance = FirebaseFirestore.instance;
+//                       final user = FirebaseAuth.instance.currentUser;
+//                       await firestoreInstance
+//                           .collection("users")
+//                           .doc(user?.uid)///???
+//                           .set({
+//                         "name": _nameController.text,
+//                         "surname": _surnameController.text,
+//                         "birthday": _birthdayController.text,
+//                         "email": _emailController.text,
+//                         "isBusinessUser": _isBusinessUser,
+//                         "tags": _tags,
+//                       });
+//                       ScaffoldMessenger.of(context).showSnackBar(
+//                         SnackBar(
+//                           content: Text("Registered successfully!"),
+//                         ),
+//                       );
+
+//                       Navigator.pop(context);
+//                        } catch (e) {
+//                         ScaffoldMessenger.of(context).showSnackBar(
+//                         SnackBar(
+//                           content: Text("Registration failed. "), //{e.message}
+//                         ),
+//                       );
+//                     }
+//                   }
+//                 },
+//               ),
+//                Row(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     const Text(
+//                       'Already  have an account?',
+//                       style: TextStyle(color: Colors.grey),
+//                     ),
+//                     const SizedBox(
+//                       width: 4,
+//                     ),
+//                     GestureDetector(
+//                       onTap: widget.onTap,
+//                       child: const Text(
+//                         'Login Now',
+//                         style: TextStyle(color: Colors.blue),
+//                       ),
+//                     ),
+//                     const SizedBox(
+//                       width: 4,
+//                       ),
+//                    ],
+//                   )
+//             ],
+//           ),
+//         ));
+//   }
+// }
 
         
                   

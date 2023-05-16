@@ -1,0 +1,96 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late bool _isNotification = false;
+  final user = FirebaseAuth.instance.currentUser!;
+  late String _profileImageUrl;
+
+  Future<void> _pickProfileImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.getImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      final file = File(pickedImage.path);
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profile_images/${user.uid}.jpg');
+
+      await storageRef.putFile(file);
+
+      final downloadUrl = await storageRef.getDownloadURL();
+      setState(() {
+        _profileImageUrl = downloadUrl;
+      });
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'profile_picture': downloadUrl,
+      });
+    }
+  }
+
+  Future<void> _fetchProfileImage() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final data = snapshot.data() as Map<String, dynamic>?;
+    final profileImageUrl = data?['profile_picture'] as String?;
+    setState(() {
+      _profileImageUrl = profileImageUrl ?? '';
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileImage();
+  }
+
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          SizedBox(height: 24),
+          Text(
+            'Profile',
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: 16),
+          GestureDetector(
+            onTap: _pickProfileImage,
+            child: CircleAvatar(
+              radius: 50,
+              backgroundImage: _profileImageUrl.isNotEmpty
+                  ? NetworkImage(_profileImageUrl)
+                  : null,
+              child: _profileImageUrl.isEmpty ? Icon(Icons.add_a_photo) : null,
+            ),
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: signUserOut,
+            child: Text("Logout"),
+          ),
+        ],
+      ),
+    );
+  }
+}
