@@ -46,10 +46,10 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: 170,
+                  width: 345,
                   height: 40,
                   child: ElevatedButton(
                     onPressed: () {
@@ -70,15 +70,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPrimary: _selectedUser ? Colors.white : Colors.white,
                       side: BorderSide(
                           color: Colors.white,
-                          width: 0,
+                          width: 0.5,
                           style: BorderStyle.solid),
                     ),
-                    // child: Center(
-                    //   child: Text(
-                    //     'User',
-                    //     style: TextStyle(fontSize: 16),
-                    //   ),
-                    // ),
 
                     child: Row(
                       children: [

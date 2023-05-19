@@ -1,24 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:pocket_guide/bussinessPage/business_HomePage.dart';
 import 'package:pocket_guide/bussinessPage/bussiness_profile_page.dart';
 import 'package:pocket_guide/components/colors.dart';
 
 import '../explorepage/expolere_page.dart';
 import '../homepage/home_page.dart';
-import '../usersPages/user_profile_page.dart';
 
-class BusinessHomePage extends StatefulWidget {
+class BusinessAppPage extends StatefulWidget {
   @override
-  State<BusinessHomePage> createState() => _BusinessHomePageState();
+  State<BusinessAppPage> createState() => _BusinessAppPageState();
 }
 
-class _BusinessHomePageState extends State<BusinessHomePage> {
+class _BusinessAppPageState extends State<BusinessAppPage> {
 
   int _selectedIndex = 0;
   static List<Widget> _widgetOptions = <Widget>
-  [  HomePage(),
-    ExplorePage(),
+  [  BusinessHomePage(),
     BussinessProfilePage(),
   ];
   void _onItemTapped(int index) {
@@ -39,17 +38,13 @@ class _BusinessHomePageState extends State<BusinessHomePage> {
             child: GNav(
               backgroundColor: MyColors.backGroundkColor,
               color: MyColors.whiteColor,
-              gap: 8,
+              gap: 32,
               activeColor: MyColors.whiteColor,
               tabBackgroundColor:MyColors.primaryColor ,
                 tabs: [
                   GButton(
                     icon: Icons.home,iconColor: MyColors.whiteColor,
-                    text: 'home',textColor: MyColors.whiteColor,
-                  ),
-                  GButton(
-                    icon: Icons.search,
-                    text: 'Explore',
+                    text: 'Home',textColor: MyColors.whiteColor,
                   ),
                   GButton(
                     icon: Icons.person,

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pocket_guide/bussinessPage/business_homePage.dart';
+import 'package:pocket_guide/bussinessPage/business_AppPage.dart';
 import 'package:pocket_guide/registerPages/bussinesRegisterPages/bussiness_detailed_info.dart';
 import 'package:pocket_guide/usersPages/user_app_page.dart';
 import 'login_or_register.dart';
@@ -39,7 +39,7 @@ class AuthUserBusinessPage extends StatelessWidget {
                           if (snapshot.data!.exists) {
                             bool detailsCompleted = snapshot.data!.get('detailsCompleted') ?? false;
                             if(detailsCompleted){
-                              return BusinessHomePage();
+                              return BusinessAppPage();
                             } else {
                               return BusinessDetailedInformationPage();
                             }

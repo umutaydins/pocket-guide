@@ -31,7 +31,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
 
   LatLng? selectedLocation;
   PickedFile? _profileImage;
-  List<PickedFile> _coverImages = []; // Changed to a list of PickedFiles
+  //List<PickedFile> _coverImages = []; // Changed to a list of PickedFiles
 
   Future<void> _pickProfileImage() async {
     final picker = ImagePicker();
@@ -41,15 +41,45 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
       _profileImage = pickedImage;
     });
   }
+  Future<void> _uploadProfileImage(String userId) async {
+    if (_profileImage != null) {
+      final file = File(_profileImage!.path);
+      final storageRef =
+      FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
-  Future<void> _pickCoverImage() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.getImage(source: ImageSource.gallery);
+      await storageRef.putFile(file);
 
-    setState(() {
-      _coverImages.add(pickedImage!); // Add the picked image to the list
-    });
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      await _firestore.collection('businesses').doc(userId).update({
+        'profile_picture': downloadUrl,
+      });
+    }
   }
+
+  // Future<void> _pickCoverImage() async {
+  //   final picker = ImagePicker();
+  //   final pickedImage = await picker.getImage(source: ImageSource.gallery);
+  //
+  //   setState(() {
+  //     _coverImages.add(pickedImage!); // Add the picked image to the list
+  //   });
+  // }
+  // Future<void> _uploadCoverImages(String userId) async {
+  //   for (int i = 0; i < _coverImages.length; i++) {
+  //     final file = File(_coverImages[i].path);
+  //     final storageRef =
+  //     FirebaseStorage.instance.ref().child('cover_photos/$userId-$i.jpg');
+  //
+  //     await storageRef.putFile(file);
+  //
+  //     final downloadUrl = await storageRef.getDownloadURL();
+  //
+  //     await _firestore.collection('businesses').doc(userId).update({
+  //       'cover_photos': FieldValue.arrayUnion([downloadUrl]),
+  //     });
+  //   }
+  // }
 
   void registerBusiness() async {
     if (passwordController.text == confirmPasswordController.text) {
@@ -82,9 +112,9 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
           await _uploadProfileImage(userCredential.user!.uid);
         }
 
-        if (_coverImages.isNotEmpty) {
-          await _uploadCoverImages(userCredential.user!.uid);
-        }
+        // if (_coverImages.isNotEmpty) {
+        //   await _uploadCoverImages(userCredential.user!.uid);
+        // }
 
         // Navigate to the BusinessDetailedInformationPage after successful registration
         print('got');
@@ -100,37 +130,9 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
     }
   }
 
-  Future<void> _uploadProfileImage(String userId) async {
-    if (_profileImage != null) {
-      final file = File(_profileImage!.path);
-      final storageRef =
-          FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
-      await storageRef.putFile(file);
 
-      final downloadUrl = await storageRef.getDownloadURL();
 
-      await _firestore.collection('businesses').doc(userId).update({
-        'profile_picture': downloadUrl,
-      });
-    }
-  }
-
-  Future<void> _uploadCoverImages(String userId) async {
-    for (int i = 0; i < _coverImages.length; i++) {
-      final file = File(_coverImages[i].path);
-      final storageRef =
-          FirebaseStorage.instance.ref().child('cover_photos/$userId-$i.jpg');
-
-      await storageRef.putFile(file);
-
-      final downloadUrl = await storageRef.getDownloadURL();
-
-      await _firestore.collection('businesses').doc(userId).update({
-        'cover_photos': FieldValue.arrayUnion([downloadUrl]),
-      });
-    }
-  }
   // void openMapScreen() async {
   //   final LatLng? selectedLocation = await Navigator.of(context).push(
   //     MaterialPageRoute(builder: (context) => MapScreen()),
@@ -242,39 +244,43 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                   child: Text('Register'),
                 ),
                 SizedBox(height: 16),
-                GestureDetector(
-                  onTap: _pickCoverImage,
-                  child: Container(
-                    width: 200,
-                    height: 150,
-                    color: Colors.grey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add),
-                        Text('Select Cover Photos'),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                if (_coverImages.isNotEmpty)
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _coverImages.map((coverImage) {
-                      return Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: FileImage(File(coverImage.path)),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+
+
+                // GestureDetector(
+                //   onTap: _pickCoverImage,
+                //   child: Container(
+                //     width: 200,
+                //     height: 150,
+                //     color: Colors.grey,
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(Icons.add),
+                //         Text('Select Cover Photos'),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                //
+                //
+                // SizedBox(height: 16),
+                // if (_coverImages.isNotEmpty)
+                //   Wrap(
+                //     spacing: 8,
+                //     runSpacing: 8,
+                //     children: _coverImages.map((coverImage) {
+                //       return Container(
+                //         width: 100,
+                //         height: 100,
+                //         decoration: BoxDecoration(
+                //           image: DecorationImage(
+                //             image: FileImage(File(coverImage.path)),
+                //             fit: BoxFit.cover,
+                //           ),
+                //         ),
+                //       );
+                //     }).toList(),
+                //   ),
               ],
             ),
           ),

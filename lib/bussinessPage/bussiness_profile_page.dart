@@ -165,40 +165,7 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
                 height: 33,
               ),
               //EDIT INTERESTS
-              Row(
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/small_box.svg',
-                    color: MyColors.whiteColor,
-                    height: 24,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Text(
-                      'Edit interests',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: MyColors.thirdTextColor,
-                      ),
-                    ),
-                  ),
-                  Padding(padding: EdgeInsets.only(right: 188)),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>  EditBusinessInterestPage(),
-                        ),
-                      );
-                    },
-                    icon: SvgPicture.asset(
-                      'assets/icons/arrow.svg',
-                      height: 18,
-                    ),
-                  ),
-                ],
-              ),
+
               //LOGOUT
               SizedBox(
                 height: 23,

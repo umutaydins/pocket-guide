@@ -39,8 +39,6 @@ Future<void> _pickProfileImage() async {
     _profileImage = pickedImage;
   });
 }
-
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -53,6 +51,22 @@ Future<void> _pickProfileImage() async {
         selectedDate = picked;
       });
   }
+  Future<void> _uploadProfileImage(String userId) async {
+    if (_profileImage != null) {
+      final file = File(_profileImage!.path);
+      final storageRef = FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
+
+      await storageRef.putFile(file);
+
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      await _firestore.collection('users').doc(userId).update({
+        'profile_picture': downloadUrl,
+      });
+    }
+  }
+
+
 
  void registerUser() async {
   if (passwordController.text == confirmPasswordController.text) {
@@ -84,20 +98,7 @@ Future<void> _pickProfileImage() async {
   }
 }
 
-Future<void> _uploadProfileImage(String userId) async {
-  if (_profileImage != null) {
-    final file = File(_profileImage!.path);
-    final storageRef = FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
-    await storageRef.putFile(file);
-
-    final downloadUrl = await storageRef.getDownloadURL();
-
-    await _firestore.collection('users').doc(userId).update({
-      'profile_picture': downloadUrl,
-    });
-  }
-}
 
   @override
   Widget build(BuildContext context) {
