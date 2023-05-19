@@ -28,6 +28,16 @@ class _BusinessDetailedInformationPageState
   Map<String, bool> selectedTags = {};
   Map<String, bool> selectedPricing = {};
 
+void incorrectUsage(BuildContext context) async {
+  await Future.delayed(Duration(seconds: 1));
+
+  // The context might no longer be valid here!
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(
+      builder: (context) => BusinessAppPage(),
+    ),
+  );
+}
 
   @override
   void initState() {
@@ -79,7 +89,7 @@ class _BusinessDetailedInformationPageState
         'detailsCompleted': true,
       });
       if (_coverImages.isNotEmpty) {
-        await _uploadCoverImages(user!.uid);
+        await _uploadCoverImages(user.uid);
       }
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(

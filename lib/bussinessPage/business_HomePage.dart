@@ -132,7 +132,7 @@ class _BusinessHomePageState extends State<BusinessHomePage> {
                   onTabChange: _onItemTapped,
                 ),
                 Expanded(
-                  child:  _widgetOptions.elementAt(_selectedIndex),
+                  child: _widgetOptions.elementAt(_selectedIndex),
                 ),
               ],
             ),

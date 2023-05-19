@@ -39,6 +39,7 @@ class _PostPageState extends State<PostPage> {
       }
     }
   }
+
   Future<void> _sharePost() async {
     final title = _titleController.text;
     final createdAt = Timestamp.now();
@@ -55,30 +56,23 @@ class _PostPageState extends State<PostPage> {
       // Örneğin, paylaşım tamamlandıktan sonra formu sıfırlayabilirsiniz:
       _titleController.clear();
       setState(() {
-        _selectedImageUrl ==null;
-
+        _selectedImageUrl == null;
       });
     } catch (e) {
       // Hata durumunda işlemler yapabilirsiniz
     }
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          child: Column(
             children: [
               SizedBox(height: 20),
-
               SizedBox(height: 20),
-
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _uploadImage,
@@ -92,12 +86,14 @@ class _PostPageState extends State<PostPage> {
               _selectedImageUrl != null && _selectedImageUrl.startsWith('http')
                   ? Image.network(_selectedImageUrl)
                   : Container(),
-              SizedBox(height: 90,),
+              SizedBox(
+                height: 90,
+              ),
               Text('sdhsd')
             ],
           ),
+        ),
       ),
-
     );
   }
 }
