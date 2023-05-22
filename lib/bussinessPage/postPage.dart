@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../components/colors.dart';
 
@@ -39,6 +40,7 @@ class _PostPageState extends State<PostPage> {
       }
     }
   }
+
   Future<void> _sharePost() async {
     final title = _titleController.text;
     final createdAt = Timestamp.now();
@@ -55,36 +57,38 @@ class _PostPageState extends State<PostPage> {
       // Örneğin, paylaşım tamamlandıktan sonra formu sıfırlayabilirsiniz:
       _titleController.clear();
       setState(() {
-        _selectedImageUrl ==null;
-
+        _selectedImageUrl == null;
       });
     } catch (e) {
       // Hata durumunda işlemler yapabilirsiniz
     }
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.backGroundkColor,
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-
+        child:  Column(
             children: [
-              SizedBox(height: 20),
-
-              SizedBox(height: 20),
-
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _uploadImage,
-                child: Text('Galeriden Görsel Seç'),
+              Padding(
+                padding:  EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: MyColors.whiteColor,
+                  ),
+                  onPressed: _uploadImage,
+                  child: Text(
+                    ' + Create new post',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: MyColors.primaryColor,
+                    ),
+                  ),
+                ),
               ),
-              SizedBox(height: 20),
+
               ElevatedButton(
                 onPressed: _sharePost,
                 child: Text('Gönderiyi Paylaş'),
@@ -92,12 +96,14 @@ class _PostPageState extends State<PostPage> {
               _selectedImageUrl != null && _selectedImageUrl.startsWith('http')
                   ? Image.network(_selectedImageUrl)
                   : Container(),
-              SizedBox(height: 90,),
-              Text('sdhsd')
+              SizedBox(
+                height: 20,
+              ),
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
             ],
           ),
-      ),
 
+      ),
     );
   }
 }

@@ -15,24 +15,28 @@ class BusinessHomePage extends StatefulWidget {
   State<BusinessHomePage> createState() => _BusinessHomePageState();
 }
 
-class _BusinessHomePageState extends State<BusinessHomePage> {
+class _BusinessHomePageState extends State<BusinessHomePage>
+    with SingleTickerProviderStateMixin {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   String _profileImageUrl = '';
   String _businessName = '';
   int _selectedIndex = 0;
+  late TabController tabController;
 
-  static List<Widget> _widgetOptions = <Widget>[
-    PostPage(),
-    EventPage(),
-    CommentPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void initState() {
+    tabController = TabController(length: 3, vsync: this);
+    fetchBusinessData();
+    super.initState();
   }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+
 
   Future<void> fetchBusinessData() async {
     final userDoc = await _firestore
@@ -50,25 +54,18 @@ class _BusinessHomePageState extends State<BusinessHomePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    fetchBusinessData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backGroundkColor,
-      body: ListView(
-        physics: AlwaysScrollableScrollPhysics(),
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
+      body: Container(
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
                 Container(
                   width: 393,
-                  height: 292,
+                  height: 252,
                   color: MyColors.thirdTextColor,
                   child: Stack(
                     children: [
@@ -92,7 +89,7 @@ class _BusinessHomePageState extends State<BusinessHomePage> {
                   height: 12,
                 ),
                 Text(
-                  'Jungle Burger',
+                  _businessName,
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w600,
                     fontSize: 24,
@@ -107,38 +104,110 @@ class _BusinessHomePageState extends State<BusinessHomePage> {
                   height: 194,
                   color: MyColors.thirdTextColor,
                 ),
-                GNav(
-                  backgroundColor: MyColors.backGroundkColor,
-                  color: MyColors.whiteColor,
-                  gap: 8,
-                  activeColor: MyColors.whiteColor,
-                  tabBackgroundColor: MyColors.primaryColor,
-                  tabs: [
-                    GButton(
-                      icon: Icons.home,
-                      text: 'Posts',
-                      textColor: MyColors.whiteColor,
-                    ),
-                    GButton(
-                      icon: Icons.search,
-                      text: 'Events',
-                    ),
-                    GButton(
-                      icon: Icons.person,
-                      text: 'Comments',
-                    ),
-                  ],
-                  selectedIndex: _selectedIndex,
-                  onTabChange: _onItemTapped,
-                ),
-                Expanded(
-                  child:  _widgetOptions.elementAt(_selectedIndex),
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  decoration: BoxDecoration(
+                    color: MyColors.backGroundkColor,
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 45),
+                      Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: MyColors.backGroundkColor,
+                            borderRadius: BorderRadius.circular(48),
+                            border: Border.all(
+                              color: MyColors.thirdTextColor,
+                              width: 1,
+                            )
+                          ),
+                          child: TabBar(
+                            indicatorWeight: 1,
+                            labelColor: MyColors.thirdTextColor,
+                            controller: tabController,
+                            indicator: BoxDecoration(
+                              color: MyColors.primaryColor,
+                              borderRadius: BorderRadius.circular(48),
+                              border: Border.all(
+                                width: 2,
+                              ),
+                            ),
+                            tabs: [
+                              Tab(
+                                text: 'Posts',
+                              ),
+                              Tab(
+                                text: 'Events',
+                              ),
+                              Tab(
+                                text: 'Comments',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        child: Expanded(
+                          child: TabBarView(
+                            controller: tabController,
+                            children: [
+                              PostPage(),
+                              EventPage(),
+                              CommentPage(),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
+        ),
     );
   }
 }
+// static List<Widget> _widgetOptions = <Widget>[
+//   PostPage(),
+//   EventPage(),
+//   CommentPage(),
+// ];
+//
+// void _onItemTapped(int index) {
+//   setState(() {
+//     _selectedIndex = index;
+//   });
+// }
+
+//_widgetOptions.elementAt(_selectedIndex),
+// GNav(
+//   backgroundColor: MyColors.backGroundkColor,
+//   color: MyColors.whiteColor,
+//   gap: 8,
+//   activeColor: MyColors.whiteColor,
+//   tabBackgroundColor: MyColors.primaryColor,
+//   tabs: [
+//     GButton(
+//       icon: Icons.home,
+//       text: 'Posts',
+//       textColor: MyColors.whiteColor,
+//     ),
+//     GButton(
+//       icon: Icons.search,
+//       text: 'Events',
+//     ),
+//     GButton(
+//       icon: Icons.person,
+//       text: 'Comments',
+//     ),
+//   ],
+//   selectedIndex: _selectedIndex,
+//   onTabChange: _onItemTapped,
+// ),
+// Expanded(
+//   child: _widgetOptions.elementAt(_selectedIndex),
+// ),
