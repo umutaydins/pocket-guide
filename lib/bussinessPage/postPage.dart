@@ -64,45 +64,49 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backGroundkColor,
       body: Container(
-        child:  Column(
-            children: [
-              Padding(
-                padding:  EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: MyColors.whiteColor,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: GestureDetector(
+                onTap: _uploadImage,
+                child: Container(
+                  height: 50,
+                  width: 345,
+                  decoration: BoxDecoration(
+                    color: MyColors.whiteColor,
+                    borderRadius: BorderRadius.circular(48),
+                    border: Border.all(
+                      width: 2,
+                    ),
                   ),
-                  onPressed: _uploadImage,
-                  child: Text(
-                    ' + Create new post',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: MyColors.primaryColor,
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            ' + Create new post',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: MyColors.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-
-              ElevatedButton(
-                onPressed: _sharePost,
-                child: Text('Gönderiyi Paylaş'),
-              ),
-              _selectedImageUrl != null && _selectedImageUrl.startsWith('http')
-                  ? Image.network(_selectedImageUrl)
-                  : Container(),
-              SizedBox(
-                height: 20,
-              ),
-              SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
-            ],
-          ),
-
+            ),
+          ],
+        ),
       ),
     );
   }
