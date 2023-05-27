@@ -8,6 +8,9 @@ import 'package:pocket_guide/bussinessPage/eventPage.dart';
 import 'package:pocket_guide/bussinessPage/postPage.dart';
 import 'package:pocket_guide/components/colors.dart';
 
+import '../business_components/cover_photo_slider.dart';
+import '../business_components/pair_text.dart';
+
 class BusinessHomePage extends StatefulWidget {
   const BusinessHomePage({Key? key}) : super(key: key);
 
@@ -36,15 +39,12 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     super.dispose();
   }
 
-
-
   Future<void> fetchBusinessData() async {
     final userDoc = await _firestore
         .collection('businesses')
         .doc(_auth.currentUser!.uid)
         .get();
     final businessData = userDoc.data();
-    print('aa');
     if (businessData != null) {
       setState(() {
         _profileImageUrl = businessData['profile_picture'] ?? '';
@@ -52,26 +52,38 @@ class _BusinessHomePageState extends State<BusinessHomePage>
       });
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {
+    print('bussinesHome');
+
     return Scaffold(
       backgroundColor: MyColors.backGroundkColor,
       body: Container(
-          height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                Container(
-                  width: 393,
-                  height: 252,
-                  color: MyColors.thirdTextColor,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 105,
-                        right: 198,
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              Container(
+                width: 440,
+                height: 596,
+                color: MyColors.backGroundkColor,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 0,
+                      
+                      child: Container(
+                        width: 420,
+                        height: 298,
+                        child: YourPage(userId: _auth.currentUser!.uid)),
+                    ),
+                    Positioned(
+                      top: 135,
+                      right: 220,
+                      child: Container(
                         child: Padding(
                           padding: const EdgeInsets.all(115.0),
                           child: CircleAvatar(
@@ -82,13 +94,12 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
+                    ),
+              Positioned(
+                top: 290,
+                right: 150,
+
+                child: Text(
                   _businessName,
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w600,
@@ -96,78 +107,140 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                     color: MyColors.thirdTextColor,
                   ),
                 ),
-                SizedBox(
-                  height: 12,
+              ),
+               Positioned(
+  top: 330,
+  left: 13,
+  child: Container(
+    width: 400,
+    height: 194,
+    color: MyColors.thirdTextColor,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'Description',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+'asdasdasas'                ),
+                SizedBox(height: 16),
+                TitleTextPair(
+                  title: 'Price Ranges:',
+                  text: '\$\$',
                 ),
-                Container(
-                  width: 345,
-                  height: 194,
-                  color: MyColors.thirdTextColor,
+                TitleTextPair(
+                  title: 'Interest:',
+                  text: 'Restaurants, Fastfood',
                 ),
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    color: MyColors.backGroundkColor,
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 45),
-                      Padding(
-                        padding: EdgeInsets.all(5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: MyColors.backGroundkColor,
-                            borderRadius: BorderRadius.circular(48),
-                            border: Border.all(
-                              color: MyColors.thirdTextColor,
-                              width: 1,
-                            )
-                          ),
-                          child: TabBar(
-                            indicatorWeight: 1,
-                            labelColor: MyColors.thirdTextColor,
-                            controller: tabController,
-                            indicator: BoxDecoration(
-                              color: MyColors.primaryColor,
-                              borderRadius: BorderRadius.circular(48),
-                              border: Border.all(
-                                width: 2,
-                              ),
-                            ),
-                            tabs: [
-                              Tab(
-                                text: 'Posts',
-                              ),
-                              Tab(
-                                text: 'Events',
-                              ),
-                              Tab(
-                                text: 'Comments',
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      Container(
-                        child: Expanded(
-                          child: TabBarView(
-                            controller: tabController,
-                            children: [
-                              PostPage(),
-                              EventPage(),
-                              CommentPage(),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                TitleTextPair(
+                  title: 'Open from:',
+                  text: '7am to 10am',
+                ),
+                TitleTextPair(
+                  title: 'Options:',
+                  text: 'Take-away',
+                ),
+                TitleTextPair(
+                  title: 'Rating:',
+                  text: '****',
+                ),
+                TitleTextPair(
+                  title: 'Location:',
+                  text: 'Izmir, Turkey',
                 ),
               ],
             ),
           ),
         ),
+      ],
+    ),
+  ),
+),
+
+                  ],
+                ),
+              ),
+            
+              SizedBox(
+                height: 12,
+              ),
+             
+              Container(
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  color: MyColors.backGroundkColor,
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 45),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: MyColors.backGroundkColor,
+                            borderRadius: BorderRadius.circular(48),
+                            border: Border.all(
+                              color: MyColors.thirdTextColor,
+                              width: 1,
+                            )),
+                        child: TabBar(
+                          indicatorWeight: 1,
+                          labelColor: MyColors.thirdTextColor,
+                          controller: tabController,
+                          indicator: BoxDecoration(
+                            color: MyColors.primaryColor,
+                            borderRadius: BorderRadius.circular(48),
+                            border: Border.all(
+                              width: 2,
+                            ),
+                          ),
+                          tabs: [
+                            Tab(
+                              text: 'Posts',
+                            ),
+                            Tab(
+                              text: 'Events',
+                            ),
+                            Tab(
+                              text: 'Comments',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: Expanded(
+                        child: TabBarView(
+                          controller: tabController,
+                          children: [
+                            PostPage(),
+                            EventPage(),
+                            CommentPage(),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

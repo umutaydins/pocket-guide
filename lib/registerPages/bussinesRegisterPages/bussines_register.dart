@@ -78,6 +78,9 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
         if (_profileImage != null) {
           await _uploadProfileImage(userCredential.user!.uid);
         }
+        if (_coverImages.isNotEmpty) {
+        await _uploadCoverImages(userCredential.user!.uid);
+      }
         // Navigate to the BusinessDetailedInformationPage after successful registration
         print('got');
         Navigator.of(context).push(
