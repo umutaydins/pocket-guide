@@ -87,7 +87,7 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          Text('sadsadsad'+
                             _businessName,
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w600,

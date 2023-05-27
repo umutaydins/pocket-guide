@@ -37,11 +37,13 @@ class AuthUserBusinessPage extends StatelessWidget {
                           AsyncSnapshot<DocumentSnapshot> snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data!.exists) {
-                            bool detailsCompleted = snapshot.data!.get('detailsCompleted') ?? false;
-                            if(detailsCompleted){
+                            bool detailsCompleted =
+                                snapshot.data!.get('detailsCompleted') ?? false;
+                            if (detailsCompleted) {
                               return BusinessAppPage();
                             } else {
-                              return BusinessDetailedInformationPage();
+                              // return BusinessDetailedInformationPage();
+                              return LoginOrRegisterPage();
                             }
                           } else {
                             return Text('No data found.');

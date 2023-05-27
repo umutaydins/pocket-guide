@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pocket_guide/bussinessPage/business_AppPage.dart';
 import 'package:pocket_guide/components/map_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pocket_guide/registerPages/bussinesRegisterPages/bussiness_detailed_info.dart';
@@ -22,8 +23,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   final _firestore = FirebaseFirestore.instance;
 
   final TextEditingController nameController = TextEditingController();
-  //final TextEditingController descriptionController = TextEditingController();
-  //final TextEditingController tagsController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -31,55 +31,16 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
 
   LatLng? selectedLocation;
   PickedFile? _profileImage;
-  //List<PickedFile> _coverImages = []; // Changed to a list of PickedFiles
 
-  Future<void> _pickProfileImage() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.getImage(source: ImageSource.gallery);
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
-    setState(() {
-      _profileImage = pickedImage;
-    });
-  }
-  Future<void> _uploadProfileImage(String userId) async {
-    if (_profileImage != null) {
-      final file = File(_profileImage!.path);
-      final storageRef =
-      FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
+  List<PickedFile> _coverImages = []; // Changed to a list of PickedFiles
+  List<String> tags = ['bars', 'coffee', 'karaoke', 'restaurants'];
+  List<String> pricing = ['cheap', 'standard', 'expensive'];
 
-      await storageRef.putFile(file);
-
-      final downloadUrl = await storageRef.getDownloadURL();
-
-      await _firestore.collection('businesses').doc(userId).update({
-        'profile_picture': downloadUrl,
-      });
-    }
-  }
-
-  // Future<void> _pickCoverImage() async {
-  //   final picker = ImagePicker();
-  //   final pickedImage = await picker.getImage(source: ImageSource.gallery);
-  //
-  //   setState(() {
-  //     _coverImages.add(pickedImage!); // Add the picked image to the list
-  //   });
-  // }
-  // Future<void> _uploadCoverImages(String userId) async {
-  //   for (int i = 0; i < _coverImages.length; i++) {
-  //     final file = File(_coverImages[i].path);
-  //     final storageRef =
-  //     FirebaseStorage.instance.ref().child('cover_photos/$userId-$i.jpg');
-  //
-  //     await storageRef.putFile(file);
-  //
-  //     final downloadUrl = await storageRef.getDownloadURL();
-  //
-  //     await _firestore.collection('businesses').doc(userId).update({
-  //       'cover_photos': FieldValue.arrayUnion([downloadUrl]),
-  //     });
-  //   }
-  // }
+  Map<String, bool> selectedTags = {};
+  Map<String, bool> selectedPricing = {};
 
   void registerBusiness() async {
     if (passwordController.text == confirmPasswordController.text) {
@@ -106,21 +67,22 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
           'profile_picture': '',
           'email': emailController.text,
           'password': passwordController.text,
-          'detailsCompleted': false, // Set detailsCompleted as false
+          'phoneNumber': phoneController.text,
+          'description': descriptionController.text,
+          'tags': selectedTags,
+          'pricing': selectedPricing,
+          'detailsCompleted': true,
+
+          'detailsCompleted': true, // Set detailsCompleted as false
         });
         if (_profileImage != null) {
           await _uploadProfileImage(userCredential.user!.uid);
         }
-
-        // if (_coverImages.isNotEmpty) {
-        //   await _uploadCoverImages(userCredential.user!.uid);
-        // }
-
         // Navigate to the BusinessDetailedInformationPage after successful registration
         print('got');
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => BusinessDetailedInformationPage(),
+            builder: (context) => BusinessAppPage(),
           ),
         );
         print('hop');
@@ -130,9 +92,55 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
     }
   }
 
+  Future<void> _pickProfileImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.getImage(source: ImageSource.gallery);
 
+    setState(() {
+      _profileImage = pickedImage;
+    });
+  }
 
+  Future<void> _uploadProfileImage(String userId) async {
+    if (_profileImage != null) {
+      final file = File(_profileImage!.path);
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
+      await storageRef.putFile(file);
+
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      await _firestore.collection('businesses').doc(userId).update({
+        'profile_picture': downloadUrl,
+      });
+    }
+  }
+
+  Future<void> _pickCoverImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      _coverImages.add(pickedImage!); // Add the picked image to the list
+    });
+  }
+
+  Future<void> _uploadCoverImages(String userId) async {
+    for (int i = 0; i < _coverImages.length; i++) {
+      final file = File(_coverImages[i].path);
+      final storageRef =
+          FirebaseStorage.instance.ref().child('cover_photos/$userId-$i.jpg');
+
+      await storageRef.putFile(file);
+
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      await _firestore.collection('businesses').doc(userId).update({
+        'cover_photos': FieldValue.arrayUnion([downloadUrl]),
+      });
+    }
+  }
   // void openMapScreen() async {
   //   final LatLng? selectedLocation = await Navigator.of(context).push(
   //     MaterialPageRoute(builder: (context) => MapScreen()),
@@ -142,6 +150,16 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   //     this.selectedLocation = selectedLocation;
   //   });
   // }
+  @override
+  void initState() {
+    super.initState();
+    tags.forEach((tag) {
+      selectedTags[tag] = false;
+    });
+    pricing.forEach((price) {
+      selectedPricing[price] = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -175,43 +193,6 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                   ),
                 ),
 
-                // Description Text Field
-                // TextField(
-                //   controller: descriptionController,
-                //   decoration: InputDecoration(
-                //     labelText: "Description",
-                //   ),
-                // ),
-
-                // Location Text Field
-                // GestureDetector(
-                //   onTap: openMapScreen,
-                //   child: Container(
-                //     padding: EdgeInsets.all(16),
-                //     decoration: BoxDecoration(
-                //       border: Border.all(color: Colors.grey),
-                //       borderRadius: BorderRadius.circular(8),
-                //     ),
-                //     child: Row(
-                //       children: [
-                //         Icon(Icons.location_on),
-                //         SizedBox(width: 8),
-                //         Text(selectedLocation != null
-                //             ? "Location Selected"
-                //             : "Select Location"),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-
-                // Tags Text Field
-                // TextField(
-                //   controller: tagsController,
-                //   decoration: InputDecoration(
-                //     labelText: "Tags (comma separated)",
-                //   ),
-                // ),
-
                 // Email Text Field
                 TextField(
                   controller: emailController,
@@ -238,49 +219,99 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                   ),
                 ),
 
+                SizedBox(height: 16),
+
+                TextField(
+                  controller: phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: descriptionController,
+                  maxLines: 10,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    alignLabelWithHint: true,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 4.0,
+                  children: tags.map((tag) {
+                    return ChoiceChip(
+                      label: Text(tag),
+                      selected: selectedTags[tag]!,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          selectedTags[tag] = selected;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 16),
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 4.0,
+                  children: pricing.map((price) {
+                    return ChoiceChip(
+                      label: Text(price),
+                      selected: selectedPricing[price]!,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          selectedPricing[price] = selected;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                // Confirm Details Button
+
+                GestureDetector(
+                  onTap: _pickCoverImage,
+                  child: Container(
+                    width: 200,
+                    height: 150,
+                    color: Colors.grey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add),
+                        Text('Select Cover Photos'),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SizedBox(
+                  height: 20,
+                ),
+                Text('dssda'),
+                if (_coverImages.isNotEmpty)
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _coverImages.map((coverImage) {
+                      return Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: FileImage(File(coverImage.path)),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 // Register Button
                 ElevatedButton(
                   onPressed: registerBusiness,
                   child: Text('Register'),
                 ),
-                SizedBox(height: 16),
-
-
-                // GestureDetector(
-                //   onTap: _pickCoverImage,
-                //   child: Container(
-                //     width: 200,
-                //     height: 150,
-                //     color: Colors.grey,
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         Icon(Icons.add),
-                //         Text('Select Cover Photos'),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                //
-                //
-                // SizedBox(height: 16),
-                // if (_coverImages.isNotEmpty)
-                //   Wrap(
-                //     spacing: 8,
-                //     runSpacing: 8,
-                //     children: _coverImages.map((coverImage) {
-                //       return Container(
-                //         width: 100,
-                //         height: 100,
-                //         decoration: BoxDecoration(
-                //           image: DecorationImage(
-                //             image: FileImage(File(coverImage.path)),
-                //             fit: BoxFit.cover,
-                //           ),
-                //         ),
-                //       );
-                //     }).toList(),
-                //   ),
               ],
             ),
           ),
