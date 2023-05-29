@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pocket_guide/bussinessPage/commentPage.dart';
 import 'package:pocket_guide/bussinessPage/eventPage.dart';
 import 'package:pocket_guide/bussinessPage/postPage.dart';
@@ -21,8 +24,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   final _auth = FirebaseAuth.instance;
   String _profileImageUrl = '';
   String _businessName = '';
-  int _selectedIndex = 0;
   late TabController tabController;
+  List<PickedFile> _coverPhotos = [];
 
   void initState() {
     tabController = TabController(length: 3, vsync: this);
@@ -44,13 +47,18 @@ class _BusinessHomePageState extends State<BusinessHomePage>
         .doc(_auth.currentUser!.uid)
         .get();
     final businessData = userDoc.data();
-    print('aa');
+
     if (businessData != null) {
       setState(() {
+        _coverPhotos = (businessData['cover_photos'] as List<dynamic>)
+            .map((coverPhotoPath) => PickedFile(coverPhotoPath))
+            .toList();
         _profileImageUrl = businessData['profile_picture'] ?? '';
         _businessName = businessData['name'] ?? '';
+
       });
     }
+
   }
 
   @override
@@ -69,20 +77,29 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                   color: MyColors.thirdTextColor,
                   child: Stack(
                     children: [
-                      Positioned(
-                        top: 105,
-                        right: 198,
-                        child: Padding(
-                          padding: const EdgeInsets.all(115.0),
-                          child: CircleAvatar(
-                            backgroundImage: _profileImageUrl.isNotEmpty
-                                ? NetworkImage(_profileImageUrl)
-                                : null,
-                            radius: 34,
-                          ),
+                      if (_coverPhotos.isNotEmpty)
+                        ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _coverPhotos.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 393,
+                              height: 252,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(_coverPhotos[index].path),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                      ),
+                      if (_coverPhotos.isEmpty)
+                        Center(
+                          child: Text('No cover images selected'),
+                        ),
                     ],
+
                   ),
                 ),
                 SizedBox(
@@ -111,7 +128,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                   ),
                   child: Column(
                     children: [
-                      SizedBox(height: 45),
+                      SizedBox(height: 55),
                       Padding(
                         padding: EdgeInsets.all(5),
                         child: Container(
@@ -171,6 +188,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     );
   }
 }
+
+
 // static List<Widget> _widgetOptions = <Widget>[
 //   PostPage(),
 //   EventPage(),
@@ -210,4 +229,19 @@ class _BusinessHomePageState extends State<BusinessHomePage>
 // ),
 // Expanded(
 //   child: _widgetOptions.elementAt(_selectedIndex),
+// ),
+
+
+// Positioned(
+//   top: 105,
+//   right: 198,
+//   child: Padding(
+//     padding: const EdgeInsets.all(115.0),
+//     child: CircleAvatar(
+//       backgroundImage: _profileImageUrl.isNotEmpty
+//           ? NetworkImage(_profileImageUrl)
+//           : null,
+//       radius: 34,
+//     ),
+//   ),
 // ),
