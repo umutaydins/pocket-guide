@@ -58,6 +58,13 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _uploadPostPhotos(String userId) async {
+    if (_postPhotos.isEmpty) {
+      await _firestore.collection('businesses').doc(userId).update({
+
+        'post_photos': FieldValue.arrayUnion([]),
+      });
+      return;
+    }
     for (int i = 0; i < _postPhotos.length; i++) {
       final file = File(_postPhotos[i].path);
 

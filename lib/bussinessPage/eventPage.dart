@@ -58,6 +58,13 @@ class _EventPageState extends State<EventPage> {
   }
 
   Future<void> _uploadEventPhotos(String userId) async {
+    if (_eventPhotos.isEmpty) {
+      await _firestore.collection('businesses').doc(userId).update({
+
+        'event_photos': FieldValue.arrayUnion([]),
+      });
+      return;
+    }
     for (int i = 0; i < _eventPhotos.length; i++) {
       final file = File(_eventPhotos[i].path);
 

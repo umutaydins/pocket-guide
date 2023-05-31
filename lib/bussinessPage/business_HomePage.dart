@@ -18,6 +18,7 @@ class BusinessHomePage extends StatefulWidget {
   State<BusinessHomePage> createState() => _BusinessHomePageState();
 }
 
+
 class _BusinessHomePageState extends State<BusinessHomePage>
     with SingleTickerProviderStateMixin {
   final _firestore = FirebaseFirestore.instance;
@@ -26,6 +27,9 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   String _businessName = '';
   late TabController tabController;
   List<PickedFile> _coverPhotos = [];
+
+
+
 
   void initState() {
     tabController = TabController(length: 3, vsync: this);
