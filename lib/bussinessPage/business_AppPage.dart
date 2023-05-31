@@ -8,8 +8,8 @@ import 'package:pocket_guide/bussinessPage/create_post.dart';
 import 'package:pocket_guide/bussinessPage/post/post_page.dart';
 import 'package:pocket_guide/components/colors.dart';
 
-import '../explorepage/expolere_page.dart';
-import '../homepage/home_page.dart';
+import '../usersPages/user_expolere_page.dart';
+import '../usersPages/user_home_page.dart';
 
 class BusinessAppPage extends StatefulWidget {
   @override

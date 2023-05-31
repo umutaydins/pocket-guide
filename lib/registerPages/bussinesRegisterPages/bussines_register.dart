@@ -79,8 +79,8 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
           await _uploadProfileImage(userCredential.user!.uid);
         }
         if (_coverImages.isNotEmpty) {
-        await _uploadCoverImages(userCredential.user!.uid);
-      }
+          await _uploadCoverImages(userCredential.user!.uid);
+        }
         // Navigate to the BusinessDetailedInformationPage after successful registration
         print('got');
         Navigator.of(context).push(
@@ -176,6 +176,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                 GestureDetector(
                   // Profile Photo Selection
                   onTap: _pickProfileImage,
+
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: _profileImage != null
