@@ -5,8 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pocket_guide/bussinessPage/commentPage.dart';
 import 'package:pocket_guide/bussinessPage/eventPage.dart';
-import 'package:pocket_guide/bussinessPage/postPage.dart';
+import 'package:pocket_guide/bussinessPage/post/postPage.dart';
 import 'package:pocket_guide/components/colors.dart';
+import 'package:pocket_guide/user_info/bussines/fetch_bus_info.dart';
 
 import '../business_components/cover_photo_slider.dart';
 import '../business_components/pair_text.dart';
@@ -26,6 +27,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   String _businessName = '';
   int _selectedIndex = 0;
   late TabController tabController;
+  String userID = '';
 
   void initState() {
     tabController = TabController(length: 3, vsync: this);
@@ -38,7 +40,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     tabController.dispose();
     super.dispose();
   }
-
+ 
   Future<void> fetchBusinessData() async {
     final userDoc = await _firestore
         .collection('businesses')
@@ -49,10 +51,10 @@ class _BusinessHomePageState extends State<BusinessHomePage>
       setState(() {
         _profileImageUrl = businessData['profile_picture'] ?? '';
         _businessName = businessData['name'] ?? '';
+        userID = _auth.currentUser!.uid;
       });
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -74,11 +76,10 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                   children: [
                     Positioned(
                       top: 0,
-                      
                       child: Container(
-                        width: 420,
-                        height: 298,
-                        child: YourPage(userId: _auth.currentUser!.uid)),
+                          width: 420,
+                          height: 298,
+                          child: YourPage(userId: _auth.currentUser!.uid)),
                     ),
                     Positioned(
                       top: 135,
@@ -95,90 +96,89 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                         ),
                       ),
                     ),
-              Positioned(
-                top: 290,
-                right: 150,
-
-                child: Text(
-                  _businessName,
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                    color: MyColors.thirdTextColor,
-                  ),
-                ),
-              ),
-               Positioned(
-  top: 330,
-  left: 13,
-  child: Container(
-    width: 400,
-    height: 194,
-    color: MyColors.thirdTextColor,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            'Description',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-'asdasdasas'                ),
-                SizedBox(height: 16),
-                TitleTextPair(
-                  title: 'Price Ranges:',
-                  text: '\$\$',
-                ),
-                TitleTextPair(
-                  title: 'Interest:',
-                  text: 'Restaurants, Fastfood',
-                ),
-                TitleTextPair(
-                  title: 'Open from:',
-                  text: '7am to 10am',
-                ),
-                TitleTextPair(
-                  title: 'Options:',
-                  text: 'Take-away',
-                ),
-                TitleTextPair(
-                  title: 'Rating:',
-                  text: '****',
-                ),
-                TitleTextPair(
-                  title: 'Location:',
-                  text: 'Izmir, Turkey',
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-),
-
+                    Positioned(
+                      top: 290,
+                      right: 150,
+                      child: Text(
+                        _businessName,
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24,
+                          color: MyColors.thirdTextColor,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 330,
+                      left: 13,
+                      child: Container(
+                        width: 400,
+                        height: 194,
+                        color: MyColors.thirdTextColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              child: Text(
+                                'Description',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    UserInfoWidget(
+                                        infoType: 'description'),
+                                    SizedBox(height: 16),
+                                    TitleTextPair(
+                                      title: 'Price Ranges:',
+                                      text: '\$\$',
+                                    ),
+                                    TitleTextPair(
+                                      title: 'Interest:',
+                                      text: 'Restaurants, Fastfood',
+                                    ),
+                                    TitleTextPair(
+                                      title: 'Open from:',
+                                      text: '7am to 10am',
+                                    ),
+                                    TitleTextPair(
+                                      title: 'Options:',
+                                      text: 'Take-away',
+                                    ),
+                                    TitleTextPair(
+                                      title: 'Rating:',
+                                      text: '****',
+                                    ),
+                                    TitleTextPair(
+                                      title: 'Location:',
+                                      text: 'Izmir, Turkey',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            
               SizedBox(
                 height: 12,
               ),
-             
               Container(
                 height: MediaQuery.of(context).size.height,
                 decoration: BoxDecoration(
@@ -227,7 +227,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                         child: TabBarView(
                           controller: tabController,
                           children: [
-                            PostPage(),
+                            // PostPage(),
                             EventPage(),
                             CommentPage(),
                           ],
