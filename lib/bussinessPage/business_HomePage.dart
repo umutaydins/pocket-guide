@@ -177,7 +177,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                             children: [
                               PostPage(),
                               EventPage(),
-                              CommentPage(),
+                              CommentPage(businessId:_auth.currentUser!.uid ,),
                             ],
                           ),
                         ),

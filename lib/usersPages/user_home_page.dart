@@ -20,6 +20,8 @@ class Business {
   final List<String> coverPhotos;
   final List<String> postPhotos;
   final List<String> eventPhotos;
+  final String id;
+
   Business(
       {
         required this.name,
@@ -27,6 +29,8 @@ class Business {
         required this.coverPhotos,
         required this.postPhotos,
         required this.eventPhotos,
+        required this.id,
+
       }
       );
 }
@@ -85,6 +89,8 @@ class _HomePageState extends State<HomePage> {
     snapshot.docs.forEach((doc) async {
       String name = doc['name'];
       String imageUrl = doc['profile_picture'];
+      String id = doc.id;
+
       List<String> coverPhotos = [];
       if (doc['cover_photos'] != null && doc['cover_photos'] is List) {
         coverPhotos = List<String>.from(doc['cover_photos']);
@@ -103,23 +109,13 @@ class _HomePageState extends State<HomePage> {
       }
 
 
-      // List<String> postPhotos = [];
-      // if (doc['post_photos'] != null && doc['post_photos'] is List) {
-      //   postPhotos = List<String>.from(doc['post_photos']);
-      // }
-
-      // List<String> eventPhotos = [];
-      // if (doc['event_photos'] != null && doc['event_photos'] is List) {
-      //   eventPhotos = List<String>.from(doc['event_photos']);
-      // }
-      //Diğer işletme bilgilerini de burada alabilirsiniz
-
       Business business = Business(
           name: name,
           profile_image: imageUrl,
           coverPhotos: coverPhotos,
           postPhotos: postPhotos,
           eventPhotos: eventPhotos,
+          id: id,
       );
       businessList.add(business);
     });

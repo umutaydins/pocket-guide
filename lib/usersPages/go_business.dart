@@ -18,6 +18,7 @@ class Post {
     required this.postPhotos,
   });
 }
+
 class Event {
   final List<String> eventPhotos;
 
@@ -28,7 +29,6 @@ class Event {
 
 class GoBusinessHomePage extends StatefulWidget {
   final Business business;
-
 
   GoBusinessHomePage({required this.business, Key? key}) : super(key: key);
 
@@ -43,6 +43,7 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
   late List<Post> posts;
   late List<Event> events;
 
+
   Business get business => widget.business;
 
   void initState() {
@@ -52,7 +53,6 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
     getPosts().then((postList) {
       setState(() {
         posts = postList;
-        
       }); // fetchBusinessData();
     });
     getEvents().then((eventList) {
@@ -61,6 +61,7 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
       }); // fetchBusinessData();
     });
   }
+  
 
   Future<List<Post>> getPosts() async {
     QuerySnapshot snapshot =
@@ -72,7 +73,6 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
         postPhotos = List<String>.from(doc['post_photos']);
       }
 
-
       Post post = Post(
         postPhotos: postPhotos,
       );
@@ -81,12 +81,12 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
 
     return postList;
   }
+
   Future<List<Event>> getEvents() async {
     QuerySnapshot snapshot =
-    await FirebaseFirestore.instance.collection('businesses').get();
+        await FirebaseFirestore.instance.collection('businesses').get();
     List<Event> eventList = [];
     snapshot.docs.forEach((doc) {
-
       List<String> eventPhotos = [];
       if (doc['event_photos'] != null && doc['event_photos'] is List) {
         eventPhotos = List<String>.from(doc['event_photos']);
@@ -100,6 +100,24 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
 
     return eventList;
   }
+  // Future<List<Comment>> getComments() async {
+  //   QuerySnapshot snapshot =
+  //   await FirebaseFirestore.instance.collection('businesses').get();
+  //   List<Comment> commentList = [];
+  //   snapshot.docs.forEach((doc) {
+  //     List<String> comments = [];
+  //     if (doc['comments'] != null && doc['comments'] is List) {
+  //       comments = List<String>.from(doc['comments']);
+  //     }
+  //
+  //     Comment comment = Comment(
+  //       comments: comments,
+  //     );
+  //     commentList.add(comment);
+  //   });
+  //
+  //   return commentList;
+  // }
 
   @override
   void dispose() {
@@ -248,9 +266,13 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
                         child: TabBarView(
                           controller: tabController,
                           children: [
-                            GoPostPage(business: business,),
-                            GoEventPage(business: business,),
-                            CommentPage(),
+                            GoPostPage(
+                              business: business,
+                            ),
+                            GoEventPage(
+                              business: business,
+                            ),
+                            CommentPage(businessId: business.id,),
                           ],
                         ),
                       ),
