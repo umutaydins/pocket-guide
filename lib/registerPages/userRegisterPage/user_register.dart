@@ -26,7 +26,9 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
-  
+  List<String> tags = ['bars', 'coffee', 'karaoke', 'restaurants'];
+
+  Map<String, bool> selectedTags = {};
   String gender = 'Male'; // Default gender
   DateTime selectedDate = DateTime.now(); // Default birthday
   PickedFile? _profileImage;
@@ -66,6 +68,15 @@ Future<void> _pickProfileImage() async {
     }
   }
 
+  void initState() {
+    super.initState();
+    tags.forEach((tag) {
+      selectedTags[tag] = false;
+    });
+    
+    
+  }
+
 
 
  void registerUser() async {
@@ -83,7 +94,8 @@ Future<void> _pickProfileImage() async {
         'birthday': DateFormat('yyyy-MM-dd').format(selectedDate),
         'gender': gender,
         'email': emailController.text,
-        'interests': [],
+        'tags': selectedTags,
+
       });
 
       if (_profileImage != null) {
@@ -190,6 +202,22 @@ Future<void> _pickProfileImage() async {
                   ),
                   obscureText: true,
                 ),
+                  Wrap(
+                  spacing: 8.0,
+                  runSpacing: 4.0,
+                  children: tags.map((tag) {
+                    return ChoiceChip(
+                      label: Text(tag),
+                      selected: selectedTags[tag]!,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          selectedTags[tag] = selected;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+
 
                 // Register Button
                 ElevatedButton(

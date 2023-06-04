@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pocket_guide/components/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../bussinessPage/business_HomePage.dart';
+import 'bussiness_searchbar.dart';
 import 'go_business.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,13 +34,34 @@ class Business {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   List<Business> businesses = [];
+  late bool _isNotification = false;
+  String _profileImageUrl = '';
+  String _nameSurname = '';
+  String _email = '';
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
   }
+
+   Future<void> fetchUserData() async {
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    final userData = userDoc.data();
+    if (userData != null) {
+      setState(() {
+        _profileImageUrl = userData['profile_picture'] ?? '';
+        _nameSurname = userData['name_surname'] ?? '';
+        _email = userData['email'] ?? '';
+      });
+    }
+  }
   @override
   void initState() {
     super.initState();
+        fetchUserData();
+
     // İşletmeleri getir ve listeyi güncelle
     getBusinesses().then((businessList) {
       setState(() {
@@ -126,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   children: [
                     Text(
-                      'Hi Berkay',
+                      'Hi '+ _nameSurname,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         fontSize: 24,
@@ -136,10 +158,13 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: 175,
                     ),
-                    CircleAvatar(
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
                       radius: 24.0,
                       backgroundImage: NetworkImage(
-                        'https://alialperenderici.dev/assets/img/pp.png',
+                          _profileImageUrl,
+                        ),
                       ),
                     ),
                   ],

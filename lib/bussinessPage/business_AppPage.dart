@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pocket_guide/bussinessPage/business_HomePage.dart';
 import 'package:pocket_guide/bussinessPage/bussiness_profile_page.dart';
-import 'package:pocket_guide/bussinessPage/create_post.dart';
-import 'package:pocket_guide/bussinessPage/post/post_page.dart';
 import 'package:pocket_guide/components/colors.dart';
 
 import '../usersPages/user_expolere_page.dart';
@@ -17,15 +14,10 @@ class BusinessAppPage extends StatefulWidget {
 }
 
 class _BusinessAppPageState extends State<BusinessAppPage> {
- 
-
-
 
   int _selectedIndex = 0;
   static List<Widget> _widgetOptions = <Widget>
   [  BusinessHomePage(),
-     CreatePostWidget(),
-
     BussinessProfilePage(),
   ];
   void _onItemTapped(int index) {
@@ -50,20 +42,14 @@ class _BusinessAppPageState extends State<BusinessAppPage> {
               activeColor: MyColors.whiteColor,
               tabBackgroundColor:MyColors.primaryColor ,
                 tabs: [
-                 
                   GButton(
                     icon: Icons.home,iconColor: MyColors.whiteColor,
-                    text: 'addpost',textColor: MyColors.whiteColor,
+                    text: 'Home',textColor: MyColors.whiteColor,
                   ),
-                   GButton(icon: Icons.add,
-                text: 'add',),
                   GButton(
                     icon: Icons.person,
                     text: 'Profile',
                   ),
-
-
-               
                 ],
               selectedIndex: _selectedIndex,
               onTabChange: _onItemTapped,

@@ -28,6 +28,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+      
 
   LatLng? selectedLocation;
   PickedFile? _profileImage;

@@ -241,7 +241,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const EditInterests(),
+                          builder: (context) =>  EditUserInterestPage(),
                         ),
                       );
                     },
