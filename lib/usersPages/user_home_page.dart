@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 class Business {
   final String name;
   final String profile_image;
@@ -22,17 +23,14 @@ class Business {
   final List<String> eventPhotos;
   final String id;
 
-  Business(
-      {
-        required this.name,
-        required this.profile_image,
-        required this.coverPhotos,
-        required this.postPhotos,
-        required this.eventPhotos,
-        required this.id,
-
-      }
-      );
+  Business({
+    required this.name,
+    required this.profile_image,
+    required this.coverPhotos,
+    required this.postPhotos,
+    required this.eventPhotos,
+    required this.id,
+  });
 }
 
 class _HomePageState extends State<HomePage> {
@@ -47,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.signOut();
   }
 
-   Future<void> fetchUserData() async {
+  Future<void> fetchUserData() async {
     final userDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -61,10 +59,11 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+
   @override
   void initState() {
     super.initState();
-        fetchUserData();
+    fetchUserData();
 
     // İşletmeleri getir ve listeyi güncelle
     getBusinesses().then((businessList) {
@@ -73,6 +72,7 @@ class _HomePageState extends State<HomePage> {
       });
     });
   }
+
   // Future<void> fetchBusinesses() async {
   //   List<Business> businessList = await getBusinesses();
   //   setState(() {
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
   Future<List<Business>> getBusinesses() async {
     // Firebase'den işletme bilgilerini getir
     QuerySnapshot snapshot =
-    await FirebaseFirestore.instance.collection('businesses').get();
+        await FirebaseFirestore.instance.collection('businesses').get();
 
     // QuerySnapshot'tan işletme listesini oluştur
     List<Business> businessList = [];
@@ -97,25 +97,26 @@ class _HomePageState extends State<HomePage> {
       }
       List<String> postPhotos = [];
       if (doc['post_photos'] != null && doc['post_photos'] is List) {
-        postPhotos = await Future<List<String>>.delayed(Duration(seconds: 0), () {
+        postPhotos =
+            await Future<List<String>>.delayed(Duration(seconds: 0), () {
           return List<String>.from(doc['post_photos']);
         });
       }
       List<String> eventPhotos = [];
       if (doc['event_photos'] != null && doc['event_photos'] is List) {
-        eventPhotos = await Future<List<String>>.delayed(Duration(seconds: 0), () {
+        eventPhotos =
+            await Future<List<String>>.delayed(Duration(seconds: 0), () {
           return List<String>.from(doc['event_photos']);
         });
       }
 
-
       Business business = Business(
-          name: name,
-          profile_image: imageUrl,
-          coverPhotos: coverPhotos,
-          postPhotos: postPhotos,
-          eventPhotos: eventPhotos,
-          id: id,
+        name: name,
+        profile_image: imageUrl,
+        coverPhotos: coverPhotos,
+        postPhotos: postPhotos,
+        eventPhotos: eventPhotos,
+        id: id,
       );
       businessList.add(business);
     });
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage> {
     } else if (businesses.isEmpty) {
       // İşletme listesi boş ise ilgili durumu göstermek için bir widget döndürebilirsiniz
       return Text('İşletme bulunamadı');
-    }else{
+    } else {
       return Scaffold(
         backgroundColor: MyColors.backGroundkColor,
         body: Align(
@@ -144,21 +145,18 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   children: [
                     Text(
-                      'Hi '+ _nameSurname,
+                      'Hi ' + _nameSurname,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         fontSize: 24,
                         color: MyColors.thirdTextColor,
                       ),
                     ),
-                    SizedBox(
-                      width: 175,
-                    ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(left: 70.0, right: 1),
                       child: CircleAvatar(
-                      radius: 24.0,
-                      backgroundImage: NetworkImage(
+                        radius: 24.0,
+                        backgroundImage: NetworkImage(
                           _profileImageUrl,
                         ),
                       ),
@@ -203,7 +201,7 @@ class _HomePageState extends State<HomePage> {
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding:
-                                EdgeInsets.only(left: 8,bottom: 5),
+                                    EdgeInsets.only(left: 8, bottom: 5),
                                 hintText: 'What are you looking for ?',
                                 hintStyle: GoogleFonts.inter(
                                   color: MyColors.primaryColor,
@@ -241,63 +239,120 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){
-
-                      },
-                      icon:
-                      Icon(Icons.arrow_forward_ios,
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.arrow_forward_ios,
                         color: MyColors.thirdTextColor,
                       ),
                     ),
                   ],
                 ),
-                Row(
-                  children: businesses.map((business) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => GoBusinessHomePage(business: business,
-                            ),
-                            settings: RouteSettings(arguments: business),
-                          ),
-                        );
-                        print('Kutuya tıklandı!');
-                      },
-                      child: Container(
-                        width: 173,
-                        height: 170,
-                        color: MyColors.whiteColor,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: business.profile_image.isNotEmpty
-                                  ? NetworkImage(business.profile_image)
-                                  : null,
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              business.name,
-                              style: TextStyle(
-                                color: MyColors.primaryColor,
-                                fontSize: 16,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: businesses
+                        .map((business) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GoBusinessHomePage(
+                                    business: business,
+                                  ),
+                                  settings: RouteSettings(arguments: business),
+                                ),
+                              );
+                              print('Kutuya tıklandı!');
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Container(
+                                width: 173,
+                                height: 170,
+                                color: MyColors.whiteColor,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: MyColors.backGroundkColor,
+                                      ),
+                                      width: double.infinity,
+                                      height: 85,
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 85,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: NetworkImage(business.profile_image),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      left: 70,
+                                      bottom: 10,
+                                      child: Text(
+                                        business.name,
+                                        style: TextStyle(
+                                          color: MyColors.backGroundkColor,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
+
+                          );
+                        })
+                        .take(5) // Limit to only 5 items
+                        .toList(),
+                  ),
+                ),
+                SizedBox(height: 35,),
+                Row(
+                  children: [
+                    Text(
+                      'Interests',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 24,
+                        color: MyColors.thirdTextColor,
+                      ),
+                    ),
+                    SizedBox(width: 173),
+                    Container(
+                      child: Text(
+                        'See all',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: MyColors.thirdTextColor,
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.arrow_forward_ios,
+                        color: MyColors.thirdTextColor,
+                      ),
+                    ),
+                  ],
                 ),
-
               ],
             ),
           ),
         ),
       );
     }
-
   }
 }
