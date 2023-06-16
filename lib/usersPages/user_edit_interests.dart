@@ -14,9 +14,6 @@ class _EditUserInterestPageState extends State<EditUserInterestPage> {
   Map<String, bool> selectedTags = {};
   final TextEditingController tagController = TextEditingController();
 
-  Map<String, bool> selectedPricing = {};
-  final TextEditingController pricingController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -27,7 +24,7 @@ class _EditUserInterestPageState extends State<EditUserInterestPage> {
   void fetchTags() async {
     DocumentSnapshot doc =
         await _firestore.collection('users').doc(user!.uid).get();
-    Map<String, dynamic> tags = Map<String, dynamic>.from(doc['interests']);
+    Map<String, dynamic> tags = Map<String, dynamic>.from(doc['tags']);
     Map<String, bool> convertedTags =
         tags.map((key, value) => MapEntry(key, value));
     setState(() {
@@ -35,8 +32,8 @@ class _EditUserInterestPageState extends State<EditUserInterestPage> {
     });
   }
   void updateTags() async {
-    await _firestore.collection('user').doc(user!.uid).update({
-      'interests': selectedTags,
+    await _firestore.collection('users').doc(user!.uid).update({
+      'tags': selectedTags,
     });
     Navigator.of(context).pop();
   }
@@ -50,22 +47,7 @@ class _EditUserInterestPageState extends State<EditUserInterestPage> {
     }
   }
 
-  void fetchPricing() async {
-    DocumentSnapshot doc =
-        await _firestore.collection('users').doc(user!.uid).get();
-    Map<String, dynamic> pricing = Map<String, dynamic>.from(doc['pricing']);
-    Map<String, bool> convertedPricing =
-        pricing.map((key, value) => MapEntry(key, value));
-    setState(() {
-      selectedPricing = convertedPricing;
-    });
-  }
-  void updatePricing() async {
-    await _firestore.collection('users').doc(user!.uid).update({
-      'pricing': selectedPricing,
-    });
-    Navigator.of(context).pop();
-  }
+ 
 
   
 
@@ -110,25 +92,7 @@ class _EditUserInterestPageState extends State<EditUserInterestPage> {
               onPressed: updateTags,
               child: Text('Update Tags'),
             ),
-            // Wrap(
-            //   spacing: 8.0,
-            //   runSpacing: 4.0,
-            //   children: selectedPricing.entries.map((entry) {
-            //     return ChoiceChip(
-            //       label: Text(entry.key),
-            //       selected: entry.value,
-            //       onSelected: (bool selected) {
-            //         setState(() {
-            //           selectedPricing[entry.key] = selected;
-            //         });
-            //       },
-            //     );
-            //   }).toList(),
-            // ),
-            // ElevatedButton(
-            //   onPressed: updatePricing,
-            //   child: Text('Update Pricing'),
-            // ),
+       
           ],
         ),
       ),
