@@ -19,16 +19,13 @@ class Business {
   final String name;
   final String profile_image;
   final List<String> coverPhotos;
-  final List<String> postPhotos;
-  final List<String> eventPhotos;
+
   final String id;
 
   Business({
     required this.name,
     required this.profile_image,
     required this.coverPhotos,
-    required this.postPhotos,
-    required this.eventPhotos,
     required this.id,
   });
 }
@@ -135,27 +132,20 @@ class _HomePageState extends State<HomePage> {
       if (doc['cover_photos'] != null && doc['cover_photos'] is List) {
         coverPhotos = List<String>.from(doc['cover_photos']);
       }
-      List<String> postPhotos = [];
-      if (doc['post_photos'] != null && doc['post_photos'] is List) {
-        postPhotos =
-            await Future<List<String>>.delayed(Duration(seconds: 0), () {
-          return List<String>.from(doc['post_photos']);
-        });
-      }
-      List<String> eventPhotos = [];
-      if (doc['event_photos'] != null && doc['event_photos'] is List) {
-        eventPhotos =
-            await Future<List<String>>.delayed(Duration(seconds: 0), () {
-          return List<String>.from(doc['event_photos']);
-        });
-      }
+      // List<String> postPhotos = [];
+      // if (doc['post_photos'] != null && doc['post_photos'] is List) {
+      //   postPhotos =
+      //       await Future<List<String>>.delayed(Duration(seconds: 0), () {
+      //     return List<String>.from(doc['post_photos']);
+      //   });
+      // }
+
 
       Business business = Business(
         name: name,
         profile_image: imageUrl,
         coverPhotos: coverPhotos,
-        postPhotos: postPhotos,
-        eventPhotos: eventPhotos,
+        // postPhotos: postPhotos,
         id: id,
       );
       businessList.add(business);

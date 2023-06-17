@@ -213,8 +213,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                           child: TabBarView(
                             controller: tabController,
                             children: [
-                              PostPage(),
-                              EventPage(),
+                              PostPage(businessId: _auth.currentUser!.uid,),
+                              EventPage(businessId: _auth.currentUser!.uid,),
                               CommentPage(businessId:_auth.currentUser!.uid ,),
                             ],
                           ),

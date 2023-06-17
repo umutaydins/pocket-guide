@@ -11,21 +11,10 @@ import 'package:pocket_guide/usersPages/go_event_page.dart';
 import 'package:pocket_guide/usersPages/go_post_page.dart';
 import 'package:pocket_guide/usersPages/user_home_page.dart';
 
-class Post {
-  final List<String> postPhotos;
+import '../bussinessPage/eventPage.dart';
+import '../bussinessPage/postPage.dart';
 
-  Post({
-    required this.postPhotos,
-  });
-}
 
-class Event {
-  final List<String> eventPhotos;
-
-  Event({
-    required this.eventPhotos,
-  });
-}
 
 class GoBusinessHomePage extends StatefulWidget {
   final Business business;
@@ -38,10 +27,7 @@ class GoBusinessHomePage extends StatefulWidget {
 
 class _GoBusinessHomePageState extends State<GoBusinessHomePage>
     with SingleTickerProviderStateMixin {
-  late Post post;
   late TabController tabController;
-  late List<Post> posts;
-  late List<Event> events;
 
 
   Business get business => widget.business;
@@ -49,75 +35,11 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
   void initState() {
     tabController = TabController(length: 3, vsync: this);
     super.initState();
-    post = Post(postPhotos: []);
-    getPosts().then((postList) {
-      setState(() {
-        posts = postList;
-      }); // fetchBusinessData();
-    });
-    getEvents().then((eventList) {
-      setState(() {
-        events = eventList;
-      }); // fetchBusinessData();
-    });
-  }
-  
 
-  Future<List<Post>> getPosts() async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('businesses').get();
-    List<Post> postList = [];
-    snapshot.docs.forEach((doc) {
-      List<String> postPhotos = [];
-      if (doc['post_photos'] != null && doc['post_photos'] is List) {
-        postPhotos = List<String>.from(doc['post_photos']);
-      }
 
-      Post post = Post(
-        postPhotos: postPhotos,
-      );
-      postList.add(post);
-    });
-
-    return postList;
   }
 
-  Future<List<Event>> getEvents() async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('businesses').get();
-    List<Event> eventList = [];
-    snapshot.docs.forEach((doc) {
-      List<String> eventPhotos = [];
-      if (doc['event_photos'] != null && doc['event_photos'] is List) {
-        eventPhotos = List<String>.from(doc['event_photos']);
-      }
 
-      Event event = Event(
-        eventPhotos: eventPhotos,
-      );
-      eventList.add(event);
-    });
-
-    return eventList;
-  }
-  // Future<List<Comment>> getComments() async {
-  //   QuerySnapshot snapshot =
-  //   await FirebaseFirestore.instance.collection('businesses').get();
-  //   List<Comment> commentList = [];
-  //   snapshot.docs.forEach((doc) {
-  //     List<String> comments = [];
-  //     if (doc['comments'] != null && doc['comments'] is List) {
-  //       comments = List<String>.from(doc['comments']);
-  //     }
-  //
-  //     Comment comment = Comment(
-  //       comments: comments,
-  //     );
-  //     commentList.add(comment);
-  //   });
-  //
-  //   return commentList;
-  // }
 
   @override
   void dispose() {
@@ -125,25 +47,7 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
     super.dispose();
   }
 
-  // Future<void> fetchBusinessData() async {
-  //   final userDoc = await _firestore
-  //       .collection('businesses')
-  //       .doc(_auth.currentUser!.uid)
-  //       .get();
-  //   final businessData = userDoc.data();
-  //
-  //   if (businessData != null) {
-  //     setState(() {
-  //       _coverPhotos = (businessData['cover_photos'] as List<dynamic>)
-  //           .map((coverPhotoPath) => PickedFile(coverPhotoPath))
-  //           .toList();
-  //       _profileImageUrl = businessData['profile_picture'] ?? '';
-  //       _businessName = businessData['name'] ?? '';
-  //
-  //     });
-  //   }
-  //
-  // }
+
 
   @override
   Widget build(BuildContext context) {
@@ -266,11 +170,11 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
                         child: TabBarView(
                           controller: tabController,
                           children: [
-                            GoPostPage(
-                              business: business,
+                            PostPage(
+                              businessId: business.id,
                             ),
-                            GoEventPage(
-                              business: business,
+                            EventPage(
+                              businessId: business.id,
                             ),
                             CommentPage(businessId: business.id,),
                           ],
