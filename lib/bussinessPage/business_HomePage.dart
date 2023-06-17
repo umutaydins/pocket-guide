@@ -117,17 +117,55 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                     color: MyColors.thirdTextColor,
                   ),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+
                 Container(
                   width: 345,
                   height: 194,
-                  color: MyColors.thirdTextColor,
+                  color: MyColors.backGroundkColor,
+                   child:Padding(
+                     padding: const EdgeInsets.all(8.0),
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Row(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                children: [
+                                  Text('Price ranges',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                      color: MyColors.thirdTextColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(width: 112),
+                              Text('Interests',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: MyColors.thirdTextColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                         SizedBox(height: 23),
+                         Text('Interests',
+                           style: GoogleFonts.inter(
+                             fontWeight: FontWeight.w400,
+                             fontSize: 12,
+                             color: MyColors.thirdTextColor,
+                           ),
+                         ),
+                       ],
+                     ),
+                   ),
                 ),
                 Container(
                   height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: MyColors.backGroundkColor,
                   ),
                   child: Column(

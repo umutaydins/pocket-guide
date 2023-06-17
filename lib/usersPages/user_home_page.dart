@@ -33,6 +33,20 @@ class Business {
   });
 }
 
+class Event {
+
+  final String eventPhoto;
+  final String businessId;
+
+  Event({
+
+    required this.eventPhoto,
+    required this.businessId,
+  });
+}
+
+
+
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   List<Business> businesses = [];
@@ -40,6 +54,27 @@ class _HomePageState extends State<HomePage> {
   String _profileImageUrl = '';
   String _nameSurname = '';
   String _email = '';
+  List<Event> events = [];
+
+  Future<List<Event>> getEvents() async {
+    QuerySnapshot snapshot =
+    await FirebaseFirestore.instance.collection('event').get();
+
+    List<Event> eventList = [];
+    snapshot.docs.forEach((doc) {
+      String businessId = doc['businness_id'];
+      String eventPhoto = doc['event_photo'];
+
+      Event event = Event(
+        businessId: businessId,
+        eventPhoto: eventPhoto,
+      );
+      eventList.add(event);
+    });
+
+    return eventList;
+  }
+
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
@@ -69,6 +104,11 @@ class _HomePageState extends State<HomePage> {
     getBusinesses().then((businessList) {
       setState(() {
         businesses = businessList;
+      });
+    });
+    getEvents().then((eventList) {
+      setState(() {
+        events = eventList;
       });
     });
   }
@@ -321,7 +361,7 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   children: [
                     Text(
-                      'Interests',
+                      'Events',
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         fontSize: 24,
@@ -348,6 +388,77 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+                SizedBox(height: 5,),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: events
+                        .map((event) {
+                      Business correspondingBusiness = businesses.firstWhere((business) => business.id == event.businessId);
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GoBusinessHomePage(
+                                business: correspondingBusiness,
+                              ),
+                            ),
+                          );
+                          print('Etkinliğe tıklandı!');
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Container(
+                            width: 173,
+                            height: 170,
+                            color: MyColors.whiteColor,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: MyColors.backGroundkColor,
+                                  ),
+                                  width: double.infinity,
+                                  height: 85,
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 85,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(event.eventPhoto),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 70,
+                                  bottom: 10,
+                                  child: Text(
+                                    correspondingBusiness.name,
+                                    style: TextStyle(
+                                      color: MyColors.backGroundkColor,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    })
+                        .take(5)
+                        .toList(),
+                  ),
+                ),
+
               ],
             ),
           ),
