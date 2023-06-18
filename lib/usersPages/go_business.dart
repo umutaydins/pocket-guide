@@ -13,6 +13,8 @@ import 'package:pocket_guide/usersPages/user_home_page.dart';
 
 import '../bussinessPage/eventPage.dart';
 import '../bussinessPage/postPage.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 
 
@@ -38,6 +40,18 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
 
 
   }
+
+_launchURL() async {
+  const url = 'https://goo.gl/maps/aZJg2Tj7xm9s6eDm7';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Site açılamadı: $url';
+  }
+}
+
+
+
 
 
 
@@ -81,11 +95,29 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
                               ),
                             ),
                           );
+                                                print('profil');
+
                         },
+                        
                       ),
                     if (business.coverPhotos.isEmpty)
                       Center(
                         child: Text('No cover images selected'),
+                      ),
+                      Positioned(
+                        top: 68,
+                        right: 200,
+                        child: Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(115.0),
+                            child: CircleAvatar(
+                              backgroundImage: business.profile_image.isNotEmpty
+                                  ? NetworkImage(business.profile_image)
+                                  : null,
+                              radius: 34,
+                            ),
+                          ),
+                        ),
                       ),
                     Positioned(
                       top: 40,
@@ -117,6 +149,12 @@ class _GoBusinessHomePageState extends State<GoBusinessHomePage>
               SizedBox(
                 height: 12,
               ),
+              ElevatedButton(
+            child: Text('Siteyi Aç'),
+            onPressed: () {
+              _launchURL();
+            },
+          ),
               Container(
                 width: 345,
                 height: 194,

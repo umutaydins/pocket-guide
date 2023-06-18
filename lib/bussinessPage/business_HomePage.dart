@@ -32,6 +32,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   String _Interest = '';
   String _options = '';
   String _location = '';
+  Map<String, bool> selectedPricing = {};
 
 
 
@@ -41,6 +42,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     fetchBusinessData();
     super.initState();
   }
+
 
   @override
   void dispose() {
@@ -64,6 +66,15 @@ class _BusinessHomePageState extends State<BusinessHomePage>
             .toList();
         _profileImageUrl = businessData['profile_picture'] ?? '';
         _businessName = businessData['name'] ?? '';
+        Map<String, dynamic> pricing = businessData['pricing'];
+        Map<String, bool> convertedPricing =
+        pricing.map((key, value) => MapEntry(key, value));
+        setState(() {
+                        selectedPricing = convertedPricing;
+
+          
+        });
+
 
       });
     }
@@ -129,6 +140,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                 SizedBox(
                   height: 12,
                 ),
+                PricingWidget(pricing: selectedPricing),
+
                 Text(
                   _businessName,
                   style: GoogleFonts.inter(
@@ -179,6 +192,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                              color: MyColors.thirdTextColor,
                            ),
                          ),
+
+
                        ],
                      ),
                    ),
@@ -251,6 +266,37 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   }
 }
 
+class PricingWidget extends StatelessWidget {
+  final Map<String, bool> pricing;
+
+  const PricingWidget({required this.pricing});
+
+  @override
+  Widget build(BuildContext context) {
+    String priceText = '';
+    if (pricing['cheap'] == true) {
+      priceText = '\$';
+    } else if (pricing['standard'] == true) {
+      priceText = '\$\$';
+    } else if (pricing['expensive'] == true) {
+      priceText = '\$\$\$';
+    }
+
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        priceText,
+        style: TextStyle(fontSize: 20),
+      ),
+    );
+  }
+}
+
+
 
 // static List<Widget> _widgetOptions = <Widget>[
 //   PostPage(),
@@ -307,3 +353,4 @@ class _BusinessHomePageState extends State<BusinessHomePage>
 //     ),
 //   ),
 // ),
+
