@@ -14,6 +14,9 @@ class _EditUserInterestPageState extends State<EditUserInterestPage> {
   Map<String, bool> selectedTags = {};
   final TextEditingController tagController = TextEditingController();
 
+  Map<String, bool> selectedPricing = {};
+  final TextEditingController pricingController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +34,7 @@ class _EditUserInterestPageState extends State<EditUserInterestPage> {
       selectedTags = convertedTags;
     });
   }
+  
   void updateTags() async {
     await _firestore.collection('users').doc(user!.uid).update({
       'tags': selectedTags,

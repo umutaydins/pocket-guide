@@ -28,19 +28,44 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+        final TextEditingController openFromController = TextEditingController();
+          final TextEditingController locationController = TextEditingController();
+
+
 
   LatLng? selectedLocation;
   PickedFile? _profileImage;
+  String price = '\$'; // Default price
 
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
   List<PickedFile> _coverImages = [];
   List<String> tags = ['bars', 'coffee', 'karaoke', 'restaurants'];
-  List<String> pricing = ['cheap', 'standard', 'expensive'];
+    String _selectedTags = '';
+    Map<String, bool> selectedTags = {};
+    List<String> options = ['Eat-in', 'Take-away','Paid admission','Free-Pass'];
+    
 
-  Map<String, bool> selectedTags = {};
+
+  List<String> pricing = ['cheap', 'standard', 'expensive'];
   Map<String, bool> selectedPricing = {};
+   String _selectedOptions= '';
+      Map<String, bool> selectedOptions = {};
+
+
+
+  void _pickPrice(String price) {
+    setState(() {
+      selectedPricing.keys.forEach((key) {
+        if (key == price) {
+          selectedPricing[key] = true;
+        } else {
+          selectedPricing[key] = false;
+        }
+      });
+    });
+  }
 
   void registerBusiness() async {
     if (passwordController.text != confirmPasswordController.text) {
@@ -121,6 +146,31 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
       );
       return;
     }
+    //tags string
+
+    _selectedTags = '';
+  selectedTags.entries.forEach((entry) {
+    if (entry.value) {
+      _selectedTags += entry.key + ',';
+    }
+  });
+
+  // Son karakteri (virgülü) kaldırma
+  if (_selectedTags.isNotEmpty) {
+    _selectedTags = _selectedTags.substring(0, _selectedTags.length - 1);
+  }
+//option string
+  _selectedOptions = '';
+  selectedOptions.entries.forEach((entry) {
+    if (entry.value) {
+      _selectedOptions += entry.key + ',';
+    }
+  });
+
+  // Son karakteri (virgülü) kaldırma
+  if (_selectedOptions.isNotEmpty) {
+    _selectedOptions = _selectedOptions.substring(0, _selectedOptions.length - 1);
+  }
 
     try {
       UserCredential userCredential =
@@ -131,15 +181,28 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
 
       userCredential.user!.updateProfile(displayName: nameController.text);
 
-      await _firestore.collection('businesses').doc(userCredential.user!.uid).set({
+      await _firestore
+          .collection('businesses')
+          .doc(userCredential.user!.uid)
+          .set({
         'name': nameController.text,
         'profile_picture': '',
         'email': emailController.text,
         'phoneNumber': phoneController.text,
         'description': descriptionController.text,
         'tags': selectedTags,
-        'pricing': selectedPricing,
+        'selectedTags':_selectedTags,
+        'price': price,
         'detailsCompleted': true,
+        'options': selectedOptions,
+        'selectedOptions':_selectedOptions,
+        'openFrom':openFromController,
+        'bussinessID': userCredential.user!.uid,
+        'location': locationController,
+
+
+
+
       });
 
       await _uploadProfileImage(userCredential.user!.uid);
@@ -226,6 +289,10 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
     pricing.forEach((price) {
       selectedPricing[price] = false;
     });
+
+    options.forEach((tag) {
+      selectedOptions[tag] = false;
+    });
   }
 
   @override
@@ -244,7 +311,8 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                     backgroundImage: _profileImage != null
                         ? FileImage(File(_profileImage!.path))
                         : null,
-                    child: _profileImage == null ? Icon(Icons.add_a_photo) : null,
+                    child:
+                        _profileImage == null ? Icon(Icons.add_a_photo) : null,
                   ),
                 ),
 
@@ -290,6 +358,15 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                 ),
 
                 SizedBox(height: 16),
+                 TextField(
+                  controller: openFromController,
+                  decoration: InputDecoration(
+                    labelText: 'Open-From',
+                  ),
+                ),
+
+                SizedBox(height: 16),
+
 
                 TextField(
                   controller: descriptionController,
@@ -301,6 +378,20 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                 ),
 
                 SizedBox(height: 16),
+
+  TextField(
+                  controller: locationController,
+                  maxLines: 10,
+                  decoration: InputDecoration(
+                    labelText: 'location(google-maps link):',
+                    alignLabelWithHint: true,
+                  ),
+                ),
+
+                SizedBox(height: 16),
+
+                                Text('Please Select Tags'),
+
 
                 Wrap(
                   spacing: 8.0,
@@ -318,20 +409,47 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                   }).toList(),
                 ),
 
-                SizedBox(height: 16),
+                          Text('Please Select options'),
+
 
                 Wrap(
                   spacing: 8.0,
                   runSpacing: 4.0,
-                  children: pricing.map((price) {
+                  children: options.map((tag) {
                     return ChoiceChip(
-                      label: Text(price),
-                      selected: selectedPricing[price]!,
+                      label: Text(tag),
+                      selected: selectedOptions[tag]!,
                       onSelected: (bool selected) {
                         setState(() {
-                          selectedPricing[price] = selected;
+                          selectedOptions[tag] = selected;
                         });
                       },
+                    );
+                  }).toList(),
+                ),
+                Text('Please Select price range'),
+
+                // price Dropdown Field
+                DropdownButton<String>(
+                  value: price,
+                  icon: Icon(Icons.arrow_downward),
+                  iconSize: 24,
+                  elevation: 16,
+                  style: TextStyle(color: Colors.deepPurple),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      price = newValue!;
+                    });
+                  },
+                  items: <String>['\$', '\$\$', '\$\$\$']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
                     );
                   }).toList(),
                 ),

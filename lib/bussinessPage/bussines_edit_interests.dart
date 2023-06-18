@@ -11,23 +11,35 @@ class EditBusinessInterestPage extends StatefulWidget {
 class _EditBusinessInterestPageState extends State<EditBusinessInterestPage> {
   final _firestore = FirebaseFirestore.instance;
   final user = FirebaseAuth.instance.currentUser;
+  String _selectedTags = '';
   Map<String, bool> selectedTags = {};
   final TextEditingController tagController = TextEditingController();
 
-  Map<String, bool> selectedPricing = {};
-  final TextEditingController pricingController = TextEditingController();
+  String _selectedOptions = '';
+  Map<String, bool> selectedOptions = {};
+  final TextEditingController OptionController = TextEditingController();
+
+  // Map<String, bool> selectedPricing = {};
+  // final TextEditingController pricingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     fetchTags();
-    fetchPricing();
+    fetchOptions();
+    // fetchPricing();
+  }
+
+  void UpdateCombine() {
+    updateTags();
+    updateOptions();
   }
 
   void fetchTags() async {
     DocumentSnapshot doc =
         await _firestore.collection('businesses').doc(user!.uid).get();
     Map<String, dynamic> tags = Map<String, dynamic>.from(doc['tags']);
+
     Map<String, bool> convertedTags =
         tags.map((key, value) => MapEntry(key, value));
     setState(() {
@@ -35,22 +47,37 @@ class _EditBusinessInterestPageState extends State<EditBusinessInterestPage> {
     });
   }
 
-  void fetchPricing() async {
+  void fetchOptions() async {
     DocumentSnapshot doc =
         await _firestore.collection('businesses').doc(user!.uid).get();
-    Map<String, dynamic> pricing = Map<String, dynamic>.from(doc['pricing']);
-    Map<String, bool> convertedPricing =
-        pricing.map((key, value) => MapEntry(key, value));
+    Map<String, dynamic> options = Map<String, dynamic>.from(doc['options']);
+
+    Map<String, bool> convertedOptions =
+        options.map((key, value) => MapEntry(key, value));
     setState(() {
-      selectedPricing = convertedPricing;
+      selectedOptions = convertedOptions;
     });
   }
-  void updatePricing() async {
-    await _firestore.collection('businesses').doc(user!.uid).update({
-      'pricing': selectedPricing,
-    });
-    Navigator.of(context).pop();
-  }
+
+  // void fetchPricing() async {
+  //   DocumentSnapshot doc =
+  //       await _firestore.collection('businesses').doc(user!.uid).get();
+  //   Map<String, dynamic> pricing = Map<String, dynamic>.from(doc['pricing']);
+  //   Map<String, bool> convertedPricing =
+  //       pricing.map((key, value) => MapEntry(key, value));
+  //   setState(() {
+  // selectedPricing = convertedPricing;
+  // print('price');
+  // print(selectedPricing);
+  //   });
+  // }
+
+  // void updatePricing() async {
+  //   await _firestore.collection('businesses').doc(user!.uid).update({
+  //     'pricing': selectedPricing,
+  //   });
+  //   Navigator.of(context).pop();
+  // }
 
   void addTag() {
     String newTag = tagController.text.trim();
@@ -62,9 +89,52 @@ class _EditBusinessInterestPageState extends State<EditBusinessInterestPage> {
     }
   }
 
+  void addOptions() {
+    String newOption = OptionController.text.trim();
+    if (newOption.isNotEmpty && !selectedOptions.containsKey(newOption)) {
+      setState(() {
+        selectedOptions[newOption] = true;
+      });
+      OptionController.clear();
+    }
+  }
+
   void updateTags() async {
+    _selectedTags = '';
+    selectedTags.entries.forEach((entry) {
+      if (entry.value) {
+        _selectedTags += entry.key + ',';
+      }
+    });
+
+    // Son karakteri (virgülü) kaldırma
+    if (_selectedTags.isNotEmpty) {
+      _selectedTags = _selectedTags.substring(0, _selectedTags.length - 1);
+    }
+
     await _firestore.collection('businesses').doc(user!.uid).update({
       'tags': selectedTags,
+      'selectedTags': _selectedTags,
+    });
+  }
+
+  void updateOptions() async {
+    _selectedOptions = '';
+    selectedOptions.entries.forEach((entry) {
+      if (entry.value) {
+        _selectedOptions += entry.key + ',';
+      }
+    });
+
+    // Son karakteri (virgülü) kaldırma
+    if (_selectedOptions.isNotEmpty) {
+      _selectedOptions =
+          _selectedOptions.substring(0, _selectedOptions.length - 1);
+    }
+
+    await _firestore.collection('businesses').doc(user!.uid).update({
+      'options': selectedOptions,
+      'selectedOptions': _selectedOptions,
     });
     Navigator.of(context).pop();
   }
@@ -104,29 +174,60 @@ class _EditBusinessInterestPageState extends State<EditBusinessInterestPage> {
                 );
               }).toList(),
             ),
-            ElevatedButton(
-              onPressed: updateTags,
-              child: Text('Update Tags'),
+            TextField(
+              controller: OptionController,
+              decoration: InputDecoration(
+                labelText: 'Add Option',
+              ),
             ),
+            
+            ElevatedButton(
+              onPressed: addOptions,
+              child: Text('Add Option'),
+            ),
+
             Wrap(
               spacing: 8.0,
               runSpacing: 4.0,
-              children: selectedPricing.entries.map((entry) {
+              children: selectedOptions.entries.map((entry) {
                 return ChoiceChip(
                   label: Text(entry.key),
                   selected: entry.value,
                   onSelected: (bool selected) {
                     setState(() {
-                      selectedPricing[entry.key] = selected;
+                      selectedOptions[entry.key] = selected;
                     });
+
+
                   },
                 );
-              }).toList(),
+              }).
+              
+              toList(),
             ),
             ElevatedButton(
-              onPressed: updatePricing,
-              child: Text('Update Pricing'),
+              onPressed: UpdateCombine,
+              child: Text('Update Tags'),
             ),
+            // Wrap(
+            //   spacing: 8.0,
+            //   runSpacing: 4.0,
+            //   children: selectedPricing.entries.map((entry) {
+            //     return ChoiceChip(
+            //       label: Text(entry.key),
+            //       selected: entry.value,
+            //       onSelected: (bool selected) {
+            //         setState(() {
+            //           selectedPricing[entry.key] = selected;
+            //         });
+            //       },
+            //     );
+            //   }).toList(),
+            // ),
+            // ElevatedButton(
+            //   onPressed: updatePricing,
+            //   child: Text('Update Pricing'),
+            // ),
           ],
         ),
       ),
