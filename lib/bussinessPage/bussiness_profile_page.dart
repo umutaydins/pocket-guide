@@ -181,7 +181,7 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
-                      'Edit interests and options',
+                      'Edit interests and option',
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
@@ -189,7 +189,7 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
                       ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.only(right: 188)),
+                  Padding(padding: EdgeInsets.only(right: 90)),
                   IconButton(
                     onPressed: () {
                       Navigator.of(context).push(

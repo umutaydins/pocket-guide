@@ -55,7 +55,7 @@ class _EventPageState extends State<EventPage> {
                     primary: MyColors.whiteColor,
                   ),
                   child: Text(
-                    '+ Yeni etkinlik oluştur',
+                    '+ Create New Event',
                     style: GoogleFonts.inter(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,

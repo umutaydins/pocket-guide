@@ -10,6 +10,7 @@ import 'package:pocket_guide/bussinessPage/commentPage.dart';
 import 'package:pocket_guide/bussinessPage/eventPage.dart';
 import 'package:pocket_guide/bussinessPage/postPage.dart';
 import 'package:pocket_guide/components/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BusinessHomePage extends StatefulWidget {
   const BusinessHomePage({Key? key}) : super(key: key);
@@ -34,14 +35,17 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   String _Interest = '';
   String _options = '';
   String _location = '';
-  Map<String, bool> selectedPricing = {};
+  String _price = '';
+  String _selectedTags = '';
+  String _selectedOptions = '';
 
-
-
+  // Map<String, bool> selectedPricing = {};
 
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    fetchBusinessData(_auth.currentUser!.uid);
+    fetchBusinessData();
+    // fetchPricing();
+
     super.initState();
   }
 
@@ -53,10 +57,61 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     super.dispose();
   }
 
+  String _formatTags(String tags) {
+    List<String> tagList = tags.split(',');
+
+    if (tagList.length <= 2) {
+      return tags;
+    }
+
+    String firstPart = tagList.sublist(0, 1).join(',');
+    String secondPart = tagList.sublist(1).join(', ');
+
+    return '$firstPart,\n$secondPart';
+  }
+
+  String _Formatoptions(String options) {
+    List<String> tagList = options.split(',');
+
+    if (tagList.length <= 1) {
+      return options;
+    }
+
+    String firstPart = tagList.sublist(0, 1).join(',');
+    String secondPart = tagList.sublist(1).join(', ');
+
+    return '$firstPart,\n$secondPart';
+  }
+
+  // void fetchPricing() async {
+  //   DocumentSnapshot doc = await _firestore
+  //       .collection('businesses')
+  //       .doc(_auth.currentUser!.uid)
+  //       .get();
+  //   Map<String, dynamic> pricing = Map<String, dynamic>.from(doc['pricing']);
+  //   Map<String, bool> convertedPricing =
+  //       pricing.map((key, value) => MapEntry(key, value));
+  //   setState(() {
+  //     selectedPricing = convertedPricing;
+  //     print('price');
+  //     print(selectedPricing);
+  //   });
+  // }
+ _launchURL() async {
+  final url = _location.replaceAll('"', '');
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Site açılamadı: $url';
+  }
+}
 
 
-  Future<void> fetchBusinessData(String businessId) async {
-    final userDoc = await _firestore.collection('businesses').doc(businessId).get();
+  Future<void> fetchBusinessData() async {
+    final userDoc = await _firestore
+        .collection('businesses')
+        .doc(_auth.currentUser!.uid)
+        .get();
     final businessData = userDoc.data();
 
     if (businessData != null) {
@@ -66,9 +121,11 @@ class _BusinessHomePageState extends State<BusinessHomePage>
             .toList();
         _profileImageUrl = businessData['profile_picture'] ?? '';
         _businessName = businessData['name'] ?? '';
-        Map<String, dynamic> pricing = businessData['pricing'];
-        Map<String, bool> convertedPricing = pricing.map((key, value) => MapEntry(key, value));
-        selectedPricing = convertedPricing;
+        _price = businessData['price'] ?? '';
+        _selectedTags = businessData['selectedTags'] ?? '';
+        _selectedOptions = businessData['selectedOptions'] ?? '';
+        _location = businessData['location'] ?? '';
+        print(_location);
       });
     }
   }
@@ -132,7 +189,6 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                 SizedBox(
                   height: 12,
                 ),
-                PricingWidget(pricing: selectedPricing),
 
                 Text(
                   _businessName,
@@ -147,7 +203,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                   width: 345,
                   height: 194,
                   color: MyColors.backGroundkColor,
-                   child:Padding(
+                child: Padding(
                      padding: const EdgeInsets.all(8.0),
                      child: Column(
                        crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +213,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                             children: [
                               Column(
                                 children: [
-                                  Text('Price ranges',
+                              Text(
+                                'Price range:' + _price,
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 12,
@@ -167,7 +224,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                                 ],
                               ),
                               SizedBox(width: 112),
-                              Text('Interests',
+                          Text(
+                            'Interests:' + _formatTags(_selectedTags),
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 12,
@@ -177,7 +235,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                             ],
                           ),
                          SizedBox(height: 23),
-                         Text('Interests',
+                      Text(
+                        'Options' + _Formatoptions(_selectedOptions),
                            style: GoogleFonts.inter(
                              fontWeight: FontWeight.w400,
                              fontSize: 12,
@@ -190,6 +249,13 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                      ),
                    ),
                 ),
+              ElevatedButton(
+                child: Text('Siteyi Aç'),
+                onPressed: () {
+                  _launchURL();
+                },
+              ),
+              // PricingWidget(pricing: selectedPricing),
                 Container(
                   height: MediaQuery.of(context).size.height,
                   decoration: const BoxDecoration(
@@ -207,8 +273,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                             border: Border.all(
                               color: MyColors.thirdTextColor,
                               width: 1,
-                            )
-                          ),
+                            )),
                           child: TabBar(
                             indicatorWeight: 1,
                             labelColor: MyColors.thirdTextColor,
@@ -240,9 +305,15 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                           child: TabBarView(
                             controller: tabController,
                             children: [
-                              PostPage(businessId: _auth.currentUser!.uid,),
-                              EventPage(businessId: _auth.currentUser!.uid,),
-                              CommentPage(businessId:_auth.currentUser!.uid ,),
+                            PostPage(
+                              businessId: _auth.currentUser!.uid,
+                            ),
+                            EventPage(
+                              businessId: _auth.currentUser!.uid,
+                            ),
+                            CommentPage(
+                              businessId: _auth.currentUser!.uid,
+                            ),
                             ],
                           ),
                         ),
@@ -273,6 +344,8 @@ class PricingWidget extends StatelessWidget {
     } else if (pricing['expensive'] == true) {
       priceText = '\$\$\$';
     }
+    print('sdsda');
+    print(priceText);
 
     return Container(
       padding: EdgeInsets.all(16),

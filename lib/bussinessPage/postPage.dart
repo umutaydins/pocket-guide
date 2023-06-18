@@ -24,65 +24,65 @@ class _PostPageState extends State<PostPage> {
 
   List<PickedFile> _postPhotos = [];
 
-  Future<void> _pickPostPhoto() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.getImage(source: ImageSource.gallery);
+  // Future<void> _pickPostPhoto() async {
+  //   final picker = ImagePicker();
+  //   final pickedImage = await picker.getImage(source: ImageSource.gallery);
 
-    if (pickedImage != null) {
-      final file = File(pickedImage.path);
+  //   if (pickedImage != null) {
+  //     final file = File(pickedImage.path);
 
-      if (file.existsSync()) { // Dosyanın mevcutluğunu kontrol ediyoruz
-        setState(() {
-          _postPhotos.add(pickedImage);
-        });
-      }
-    }
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text('Upload Photo'),
-        content: Text('Uploading the photo'),
-        actions: [
-          Center(
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                 _uploadPostPhotos(widget.businessId);// Dialog kapatılıyor
-                 // Fotoğrafı yükleme işlemi başlatılıyor
-              },
-              child: Text('OK'),
-            ),
-          ),
-        ],
-      ),
-    );
-    //await _uploadPostPhotos(_auth.currentUser!.uid);
-  }
+  //     if (file.existsSync()) { // Dosyanın mevcutluğunu kontrol ediyoruz
+  //       setState(() {
+  //         _postPhotos.add(pickedImage);
+  //       });
+  //     }
+  //   }
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) => AlertDialog(
+  //       title: Text('Upload Photo'),
+  //       content: Text('Uploading the photo'),
+  //       actions: [
+  //         Center(
+  //           child: TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //                _uploadPostPhotos(widget.businessId);// Dialog kapatılıyor
+  //                // Fotoğrafı yükleme işlemi başlatılıyor
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  //   //await _uploadPostPhotos(_auth.currentUser!.uid);
+  // }
 
-  Future<void> _uploadPostPhotos(String userId) async {
-    if (_postPhotos.isEmpty) {
-      await _firestore.collection('businesses').doc(userId).update({
+  // Future<void> _uploadPostPhotos(String userId) async {
+  //   if (_postPhotos.isEmpty) {
+  //     await _firestore.collection('businesses').doc(userId).update({
 
-        'post_photos': FieldValue.arrayUnion([]),
-      });
-      return;
-    }
-    for (int i = 0; i < _postPhotos.length; i++) {
-      final file = File(_postPhotos[i].path);
+  //       'post_photos': FieldValue.arrayUnion([]),
+  //     });
+  //     return;
+  //   }
+  //   for (int i = 0; i < _postPhotos.length; i++) {
+  //     final file = File(_postPhotos[i].path);
 
-      if (file.existsSync()) { // Dosyanın mevcutluğunu kontrol ediyoruz
-        final storageRef = FirebaseStorage.instance.ref().child('post_photos/$userId-$i.jpg');
+  //     if (file.existsSync()) { // Dosyanın mevcutluğunu kontrol ediyoruz
+  //       final storageRef = FirebaseStorage.instance.ref().child('post_photos/$userId-$i.jpg');
 
-        await storageRef.putFile(file);
+  //       await storageRef.putFile(file);
 
-        final downloadUrl = await storageRef.getDownloadURL();
+  //       final downloadUrl = await storageRef.getDownloadURL();
 
-        await _firestore.collection('businesses').doc(userId).update({
-          'post_photos': FieldValue.arrayUnion([downloadUrl]),
-        });
-      }
-    }
-  }
+  //       await _firestore.collection('businesses').doc(userId).update({
+  //         'post_photos': FieldValue.arrayUnion([downloadUrl]),
+  //       });
+  //     }
+  //   }
+  // }
 
   Future<void> fetchBusinessData() async {
     if (_postPhotos.isEmpty) {
@@ -98,20 +98,16 @@ class _PostPageState extends State<PostPage> {
               .map((postPhotoPath) => PickedFile(postPhotoPath))
               .toList();
           print('asds');
-
         });
       }
     }
   }
 
   void initState() {
-
     super.initState();
     fetchBusinessData();
     _isUserBusinessOwner = _auth.currentUser!.uid == widget.businessId;
-
   }
-
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,39 +118,44 @@ class _PostPageState extends State<PostPage> {
             SizedBox(
               height: 20,
             ),
-            if(_isUserBusinessOwner)
-            Container(
-              width: 345,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: _pickPostPhoto,
-                style: FilledButton.styleFrom(
-                  backgroundColor: MyColors.whiteColor,
-                ),
-                child: Text(
-                  '+ Create new post',
-                  style: GoogleFonts.inter(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
-                    color: MyColors.primaryColor,
+            if (_isUserBusinessOwner)
+              Container(
+                width: 345,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreatePost(),
+                        ));
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: MyColors.whiteColor,
+                  ),
+                  child: Text(
+                    '+ Create new post',
+                    style: GoogleFonts.inter(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                      color: MyColors.primaryColor,
+                    ),
                   ),
                 ),
               ),
-            ),
-
-
             Column(
               children: [
                 Container(
                   width: 393,
-                  height: 84*5,
+                  height: 84 * 5,
                   color: MyColors.backGroundkColor,
                   child: Stack(
                     children: [
                       if (_postPhotos.isNotEmpty)
                         GridView.builder(
                           physics: NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3, // Her satırda 3 fotoğraf
                           ),
                           itemCount: _postPhotos.length,
@@ -166,18 +167,16 @@ class _PostPageState extends State<PostPage> {
                               height: 252 / 3, // Her fotoğrafın yüksekliği
                               child: photo.path.startsWith('http')
                                   ? Image.network(
-                                photo.path,
-                                fit: BoxFit.cover,
-                              )
+                                      photo.path,
+                                      fit: BoxFit.cover,
+                                    )
                                   : Image.file(
-                                File(photo.path),
-                                fit: BoxFit.cover,
-                              ),
+                                      File(photo.path),
+                                      fit: BoxFit.cover,
+                                    ),
                             );
                           },
                         ),
-
-
                       if (_postPhotos.isEmpty)
                         Center(
                           child: Text('No cover images selected'),
@@ -185,13 +184,12 @@ class _PostPageState extends State<PostPage> {
                     ],
                   ),
                 ),
-            //   ],
-            // ),
-
+                //   ],
+                // ),
+              ],
+            ),
           ],
         ),
-        ],
-      ),
       ),
     );
   }
