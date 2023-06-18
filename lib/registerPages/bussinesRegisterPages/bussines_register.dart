@@ -28,23 +28,24 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-        final TextEditingController openFromController = TextEditingController();
-          final TextEditingController locationController = TextEditingController();
+  final TextEditingController openFromController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
 
 
 
-  LatLng? selectedLocation;
   PickedFile? _profileImage;
   String price = '\$'; // Default price
 
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
+
   List<PickedFile> _coverImages = [];
   List<String> tags = ['bars', 'coffee', 'karaoke', 'restaurants'];
     String _selectedTags = '';
     Map<String, bool> selectedTags = {};
     List<String> options = ['Eat-in', 'Take-away','Paid admission','Free-Pass'];
+
     
 
 
@@ -196,9 +197,8 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
         'detailsCompleted': true,
         'options': selectedOptions,
         'selectedOptions':_selectedOptions,
-        'openFrom':openFromController,
-        'bussinessID': userCredential.user!.uid,
-        'location': locationController,
+        'openFrom':openFromController.text,
+        'location': locationController.text,
 
 
 
@@ -381,10 +381,8 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
 
   TextField(
                   controller: locationController,
-                  maxLines: 10,
                   decoration: InputDecoration(
                     labelText: 'location(google-maps link):',
-                    alignLabelWithHint: true,
                   ),
                 ),
 
