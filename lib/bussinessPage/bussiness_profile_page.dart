@@ -181,7 +181,7 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
-                      'Edit interests',
+                      'Edit interests and options',
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
