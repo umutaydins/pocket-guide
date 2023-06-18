@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_guide/bussinessPage/business_AppPage.dart';
-import 'package:pocket_guide/components/map_screen.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pocket_guide/registerPages/bussinesRegisterPages/bussiness_detailed_info.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';

@@ -10,14 +10,16 @@ import 'package:pocket_guide/bussinessPage/commentPage.dart';
 import 'package:pocket_guide/bussinessPage/eventPage.dart';
 import 'package:pocket_guide/bussinessPage/postPage.dart';
 import 'package:pocket_guide/components/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BusinessHomePage extends StatefulWidget {
   const BusinessHomePage({Key? key}) : super(key: key);
 
+
+
   @override
   State<BusinessHomePage> createState() => _BusinessHomePageState();
 }
+
 
 class _BusinessHomePageState extends State<BusinessHomePage>
     with SingleTickerProviderStateMixin {
@@ -32,19 +34,18 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   String _Interest = '';
   String _options = '';
   String _location = '';
-  String _price = '';
-  String _selectedTags = '';
-  String _selectedOptions = '';
+  Map<String, bool> selectedPricing = {};
 
-  // Map<String, bool> selectedPricing = {};
+
+
 
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    fetchBusinessData();
-    // fetchPricing();
-
+    fetchBusinessData(_auth.currentUser!.uid);
     super.initState();
   }
+
+
 
   @override
   void dispose() {
@@ -52,61 +53,10 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     super.dispose();
   }
 
-  String _formatTags(String tags) {
-    List<String> tagList = tags.split(',');
-
-    if (tagList.length <= 2) {
-      return tags;
-    }
-
-    String firstPart = tagList.sublist(0, 1).join(',');
-    String secondPart = tagList.sublist(1).join(', ');
-
-    return '$firstPart,\n$secondPart';
-  }
-
-  String _Formatoptions(String options) {
-    List<String> tagList = options.split(',');
-
-    if (tagList.length <= 1) {
-      return options;
-    }
-
-    String firstPart = tagList.sublist(0, 1).join(',');
-    String secondPart = tagList.sublist(1).join(', ');
-
-    return '$firstPart,\n$secondPart';
-  }
-
-  // void fetchPricing() async {
-  //   DocumentSnapshot doc = await _firestore
-  //       .collection('businesses')
-  //       .doc(_auth.currentUser!.uid)
-  //       .get();
-  //   Map<String, dynamic> pricing = Map<String, dynamic>.from(doc['pricing']);
-  //   Map<String, bool> convertedPricing =
-  //       pricing.map((key, value) => MapEntry(key, value));
-  //   setState(() {
-  //     selectedPricing = convertedPricing;
-  //     print('price');
-  //     print(selectedPricing);
-  //   });
-  // }
- _launchURL() async {
-  final url = _location.replaceAll('"', '');
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Site açılamadı: $url';
-  }
-}
 
 
-  Future<void> fetchBusinessData() async {
-    final userDoc = await _firestore
-        .collection('businesses')
-        .doc(_auth.currentUser!.uid)
-        .get();
+  Future<void> fetchBusinessData(String businessId) async {
+    final userDoc = await _firestore.collection('businesses').doc(businessId).get();
     final businessData = userDoc.data();
 
     if (businessData != null) {
@@ -116,11 +66,9 @@ class _BusinessHomePageState extends State<BusinessHomePage>
             .toList();
         _profileImageUrl = businessData['profile_picture'] ?? '';
         _businessName = businessData['name'] ?? '';
-        _price = businessData['price'] ?? '';
-        _selectedTags = businessData['selectedTags'] ?? '';
-        _selectedOptions = businessData['selectedOptions'] ?? '';
-        _location = businessData['location'] ?? '';
-        print(_location);
+        Map<String, dynamic> pricing = businessData['pricing'];
+        Map<String, bool> convertedPricing = pricing.map((key, value) => MapEntry(key, value));
+        selectedPricing = convertedPricing;
       });
     }
   }
@@ -130,83 +78,96 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     return Scaffold(
       backgroundColor: MyColors.backGroundkColor,
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              Container(
-                width: 393,
-                height: 252,
-                color: MyColors.thirdTextColor,
-                child: Stack(
-                  children: [
-                    if (_coverPhotos.isNotEmpty)
-                      ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _coverPhotos.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            width: 393,
-                            height: 252,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(_coverPhotos[index].path),
-                                fit: BoxFit.cover,
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                Container(
+                  width: 393,
+                  height: 252,
+                  color: MyColors.thirdTextColor,
+                  child: Stack(
+                    children: [
+                      if (_coverPhotos.isNotEmpty)
+                        ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _coverPhotos.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 393,
+                              height: 252,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(_coverPhotos[index].path),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
+                            );
+                          },
+                        ),
+                      if (_coverPhotos.isEmpty)
+                        Center(
+                          child: Text('No cover images selected'),
+                        ),
+                      Positioned(
+                        top: 68,
+                        right: 200,
+                        child: Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(115.0),
+                            child: CircleAvatar(
+                              backgroundImage: _profileImageUrl.isNotEmpty
+                                  ? NetworkImage(_profileImageUrl)
+                                  : null,
+                              radius: 34,
                             ),
-                          );
-                        },
-                      ),
-                    if (_coverPhotos.isEmpty)
-                      Center(
-                        child: Text('No cover images selected'),
-                      ),
-                    Positioned(
-                      top: 68,
-                      right: 200,
-                      child: Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(115.0),
-                          child: CircleAvatar(
-                            backgroundImage: _profileImageUrl.isNotEmpty
-                                ? NetworkImage(_profileImageUrl)
-                                : null,
-                            radius: 34,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Text(
-                _businessName,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
-                  color: MyColors.thirdTextColor,
+                SizedBox(
+                  height: 12,
                 ),
-              ),
-              Container(
-                width: 345,
-                height: 194,
-                color: MyColors.backGroundkColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
+                PricingWidget(pricing: selectedPricing),
+
+                Text(
+                  _businessName,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                    color: MyColors.thirdTextColor,
+                  ),
+                ),
+
+                Container(
+                  width: 345,
+                  height: 194,
+                  color: MyColors.backGroundkColor,
+                   child:Padding(
+                     padding: const EdgeInsets.all(8.0),
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Row(
+                           crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Price range:' + _price,
+                              Column(
+                                children: [
+                                  Text('Price ranges',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                      color: MyColors.thirdTextColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(width: 112),
+                              Text('Interests',
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 12,
@@ -215,105 +176,84 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                               ),
                             ],
                           ),
-                          SizedBox(width: 112),
-                          Text(
-                            'Interests:' + _formatTags(_selectedTags),
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 12,
-                              color: MyColors.thirdTextColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 23),
-                      Text(
-                        'Options' + _Formatoptions(_selectedOptions),
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12,
-                          color: MyColors.thirdTextColor,
-                        ),
-                      ),
-                    ],
+                         SizedBox(height: 23),
+                         Text('Interests',
+                           style: GoogleFonts.inter(
+                             fontWeight: FontWeight.w400,
+                             fontSize: 12,
+                             color: MyColors.thirdTextColor,
+                           ),
+                         ),
+
+
+                       ],
+                     ),
+                   ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  decoration: const BoxDecoration(
+                    color: MyColors.backGroundkColor,
                   ),
-                ),
-              ),
-              ElevatedButton(
-                child: Text('Siteyi Aç'),
-                onPressed: () {
-                  _launchURL();
-                },
-              ),
-              // PricingWidget(pricing: selectedPricing),
-              Container(
-                height: MediaQuery.of(context).size.height,
-                decoration: const BoxDecoration(
-                  color: MyColors.backGroundkColor,
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(height: 55),
-                    Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Container(
-                        decoration: BoxDecoration(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 55),
+                      Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Container(
+                          decoration: BoxDecoration(
                             color: MyColors.backGroundkColor,
                             borderRadius: BorderRadius.circular(48),
                             border: Border.all(
                               color: MyColors.thirdTextColor,
                               width: 1,
-                            )),
-                        child: TabBar(
-                          indicatorWeight: 1,
-                          labelColor: MyColors.thirdTextColor,
-                          controller: tabController,
-                          indicator: BoxDecoration(
-                            color: MyColors.primaryColor,
-                            borderRadius: BorderRadius.circular(48),
-                            border: Border.all(
-                              width: 2,
-                            ),
+                            )
                           ),
-                          tabs: [
-                            Tab(
-                              text: 'Posts',
+                          child: TabBar(
+                            indicatorWeight: 1,
+                            labelColor: MyColors.thirdTextColor,
+                            controller: tabController,
+                            indicator: BoxDecoration(
+                              color: MyColors.primaryColor,
+                              borderRadius: BorderRadius.circular(48),
+                              border: Border.all(
+                                width: 2,
+                              ),
                             ),
-                            Tab(
-                              text: 'Events',
-                            ),
-                            Tab(
-                              text: 'Comments',
-                            ),
-                          ],
+                            tabs: [
+                              Tab(
+                                text: 'Posts',
+                              ),
+                              Tab(
+                                text: 'Events',
+                              ),
+                              Tab(
+                                text: 'Comments',
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      child: Expanded(
-                        child: TabBarView(
-                          controller: tabController,
-                          children: [
-                            PostPage(
-                              businessId: _auth.currentUser!.uid,
-                            ),
-                            EventPage(
-                              businessId: _auth.currentUser!.uid,
-                            ),
-                            CommentPage(
-                              businessId: _auth.currentUser!.uid,
-                            ),
-                          ],
+
+                      Container(
+                        child: Expanded(
+                          child: TabBarView(
+                            controller: tabController,
+                            children: [
+                              PostPage(businessId: _auth.currentUser!.uid,),
+                              EventPage(businessId: _auth.currentUser!.uid,),
+                              CommentPage(businessId:_auth.currentUser!.uid ,),
+                            ],
+                          ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
 }
@@ -333,8 +273,6 @@ class PricingWidget extends StatelessWidget {
     } else if (pricing['expensive'] == true) {
       priceText = '\$\$\$';
     }
-    print('sdsda');
-    print(priceText);
 
     return Container(
       padding: EdgeInsets.all(16),
@@ -407,3 +345,4 @@ class PricingWidget extends StatelessWidget {
 //     ),
 //   ),
 // ),
+
