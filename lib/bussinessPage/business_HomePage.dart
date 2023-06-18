@@ -27,6 +27,11 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   String _businessName = '';
   late TabController tabController;
   List<PickedFile> _coverPhotos = [];
+  String _description = '';
+  String _openFrom = '';
+  String _Interest = '';
+  String _options = '';
+  String _location = '';
 
 
 
@@ -102,6 +107,21 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                         Center(
                           child: Text('No cover images selected'),
                         ),
+                      Positioned(
+                        top: 68,
+                        right: 200,
+                        child: Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(115.0),
+                            child: CircleAvatar(
+                              backgroundImage: _profileImageUrl.isNotEmpty
+                                  ? NetworkImage(_profileImageUrl)
+                                  : null,
+                              radius: 34,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
 
                   ),
