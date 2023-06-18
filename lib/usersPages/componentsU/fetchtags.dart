@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pocket_guide/components/colors.dart';
 
 class SelectaTagAndList extends StatefulWidget {
   @override
@@ -48,51 +50,71 @@ class _SelectaTagAndListState extends State<SelectaTagAndList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Interests'),
+      appBar:AppBar(
+        backgroundColor: Colors.transparent,
+        title: Text(
+          'Filter Tags',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: MyColors.primaryColor,
+          ),
+        ),
       ),
+      backgroundColor: MyColors.backGroundkColor,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            Column(
-              children: userTags.entries.map((entry) {
-                final String tag = entry.key;
-                final bool selected = entry.value;
+            Padding(
+              padding: const EdgeInsets.only(top: 30.0),
+              child: Column(
+                children: userTags.entries.map((entry) {
+                  final String tag = entry.key;
+                  final bool selected = entry.value;
 
-                return InkWell(
-                  onTap: () {
-                    handleTagPressed(tag);
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            tag,
-                            style: TextStyle(fontSize: 16.0),
+                  return InkWell(
+                    onTap: () {
+                      handleTagPressed(tag);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              tag,
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                color: MyColors.thirdTextColor,
+                              ),
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.check),
-                          onPressed: () {
-                            setState(() {
-                              userTags[tag] = !selected;
-                            });
-                          },
-                          color: selected ? Colors.blue : Colors.grey,
-                        ),
-                      ],
+                          IconButton(
+                            icon: Icon(Icons.check),
+                            onPressed: () {
+                              setState(() {
+                                userTags[tag] = !selected;
+                              });
+                            },
+                            color: selected ? MyColors.primaryColor : MyColors.whiteColor,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             ),
             SizedBox(height: 20.0),
             Text(
-              'Selected Businesses:',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              'Businesses',
+               style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              color: MyColors.thirdTextColor,
+            ),
             ),
             SizedBox(height: 10.0),
             selectedBusinesses.isNotEmpty
@@ -103,8 +125,17 @@ class _SelectaTagAndListState extends State<SelectaTagAndList> {
                       final business = selectedBusinesses[index];
                       final businessData = business.data() as Map<String, dynamic>;
                       return ListTile(
-                        title: Text(businessData['name']),
-                        subtitle: Text(businessData['description']),
+                        title: Text(businessData['name'],style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 15,
+                          color: MyColors.thirdTextColor,
+                        ),),
+                        subtitle: Text(businessData['description'],
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
+                              color: MyColors.thirdTextColor,
+                            ),),
                         leading: businessData['profile_picture'] != null
                             ? Container(
                                 width: 50.0,
@@ -122,7 +153,12 @@ class _SelectaTagAndListState extends State<SelectaTagAndList> {
                       );
                     },
                   )
-                : Text('No businesses found'),
+                : Text('No businesses found',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: MyColors.errorColor,
+              ),),
           ],
         ),
       ),

@@ -14,6 +14,8 @@ import 'package:pocket_guide/components/colors.dart';
 class BusinessHomePage extends StatefulWidget {
   const BusinessHomePage({Key? key}) : super(key: key);
 
+
+
   @override
   State<BusinessHomePage> createState() => _BusinessHomePageState();
 }
@@ -39,9 +41,10 @@ class _BusinessHomePageState extends State<BusinessHomePage>
 
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-    fetchBusinessData();
+    fetchBusinessData(_auth.currentUser!.uid);
     super.initState();
   }
+
 
 
   @override
@@ -52,11 +55,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
 
 
 
-  Future<void> fetchBusinessData() async {
-    final userDoc = await _firestore
-        .collection('businesses')
-        .doc(_auth.currentUser!.uid)
-        .get();
+  Future<void> fetchBusinessData(String businessId) async {
+    final userDoc = await _firestore.collection('businesses').doc(businessId).get();
     final businessData = userDoc.data();
 
     if (businessData != null) {
@@ -67,18 +67,10 @@ class _BusinessHomePageState extends State<BusinessHomePage>
         _profileImageUrl = businessData['profile_picture'] ?? '';
         _businessName = businessData['name'] ?? '';
         Map<String, dynamic> pricing = businessData['pricing'];
-        Map<String, bool> convertedPricing =
-        pricing.map((key, value) => MapEntry(key, value));
-        setState(() {
-                        selectedPricing = convertedPricing;
-
-          
-        });
-
-
+        Map<String, bool> convertedPricing = pricing.map((key, value) => MapEntry(key, value));
+        selectedPricing = convertedPricing;
       });
     }
-
   }
 
   @override

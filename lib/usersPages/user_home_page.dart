@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pocket_guide/components/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pocket_guide/usersPages/componentsU/fetchtags.dart';
 import '../bussinessPage/business_HomePage.dart';
 import 'bussiness_searchbar.dart';
 import 'go_business.dart';
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> {
 
     List<Event> eventList = [];
     snapshot.docs.forEach((doc) {
-      String businessId = doc['businness_id'];
+      String businessId = doc['business_id'];
       String eventPhoto = doc['event_photo'];
       String business_name = doc['business_name'];
 
@@ -199,57 +200,74 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 SizedBox(height: 30),
-                Text(
-                  'Search',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: MyColors.thirdTextColor,
-                  ),
-                ),
+                // Text(
+                //   'Search',
+                //   style: GoogleFonts.inter(
+                //     fontWeight: FontWeight.w600,
+                //     fontSize: 14,
+                //     color: MyColors.thirdTextColor,
+                //   ),
+                // ),
                 SizedBox(height: 14),
                 Row(
                   children: [
-                    Container(
-                      width: 344,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: MyColors.whiteColor,
-                        border: Border.all(
-                          width: 2,
-                          color: MyColors.primaryColor,
-                        ),
-                        borderRadius: BorderRadius.circular(48),
-                      ),
-                      child: Row(
-                        children: [
-                          SizedBox(width: 16.36),
-                          Icon(Icons.search),
-                          Expanded(
-                            child: TextField(
-                              // burada text box içindeki metnin stilini belirleyebilirsiniz
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: MyColors.primaryColor,
-                              ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding:
-                                    EdgeInsets.only(left: 8, bottom: 5),
-                                hintText: 'What are you looking for ?',
-                                hintStyle: GoogleFonts.inter(
-                                  color: MyColors.primaryColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   width: 344,
+                    //   height: 48,
+                    //   decoration: BoxDecoration(
+                    //     color: MyColors.whiteColor,
+                    //     border: Border.all(
+                    //       width: 2,
+                    //       color: MyColors.primaryColor,
+                    //     ),
+                    //     borderRadius: BorderRadius.circular(48),
+                    //   ),
+                    //   child: Row(
+                    //     children: [
+                    //       SizedBox(width: 16.36),
+                    //       Icon(Icons.search),
+                    //       Expanded(
+                    //         child: TextField(
+                    //           // burada text box içindeki metnin stilini belirleyebilirsiniz
+                    //           style: GoogleFonts.inter(
+                    //             fontWeight: FontWeight.w500,
+                    //             fontSize: 16,
+                    //             color: MyColors.primaryColor,
+                    //           ),
+                    //           decoration: InputDecoration(
+                    //             border: InputBorder.none,
+                    //             contentPadding:
+                    //                 EdgeInsets.only(left: 8, bottom: 5),
+                    //             hintText: 'What are you looking for ?',
+                    //             hintStyle: GoogleFonts.inter(
+                    //               color: MyColors.primaryColor,
+                    //               fontSize: 16,
+                    //               fontWeight: FontWeight.w500,
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 25),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SelectaTagAndList(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: MyColors.primaryColor, // İstediğiniz rengi burada belirleyebilirsiniz
+                    ),
+                    child: Text('SEARCH BY TAGS'),
+                  ),
                 ),
                 SizedBox(height: 35),
                 Row(
@@ -262,24 +280,24 @@ class _HomePageState extends State<HomePage> {
                         color: MyColors.thirdTextColor,
                       ),
                     ),
-                    SizedBox(width: 173),
-                    Container(
-                      child: Text(
-                        'See all',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: MyColors.thirdTextColor,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.arrow_forward_ios,
-                        color: MyColors.thirdTextColor,
-                      ),
-                    ),
+                    // SizedBox(width: 173),
+                    // Container(
+                    //   child: Text(
+                    //     'See all',
+                    //     style: GoogleFonts.inter(
+                    //       fontWeight: FontWeight.w400,
+                    //       fontSize: 14,
+                    //       color: MyColors.thirdTextColor,
+                    //     ),
+                    //   ),
+                    // ),
+                    // IconButton(
+                    //   onPressed: () {},
+                    //   icon: Icon(
+                    //     Icons.arrow_forward_ios,
+                    //     color: MyColors.thirdTextColor,
+                    //   ),
+                    // ),
                   ],
                 ),
                 SingleChildScrollView(
@@ -293,7 +311,7 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => GoBusinessHomePage(
-                                    business: business,
+                                    business: business, businessId: business.id,
                                   ),
                                   settings: RouteSettings(arguments: business),
                                 ),
@@ -348,7 +366,7 @@ class _HomePageState extends State<HomePage> {
 
                           );
                         })
-                        .take(5) // Limit to only 5 items
+                         // Limit to only 5 items
                         .toList(),
                   ),
                 ),
@@ -364,23 +382,23 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(width: 173),
-                    Container(
-                      child: Text(
-                        'See all',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: MyColors.thirdTextColor,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.arrow_forward_ios,
-                        color: MyColors.thirdTextColor,
-                      ),
-                    ),
+                    // Container(
+                    //   child: Text(
+                    //     'See all',
+                    //     style: GoogleFonts.inter(
+                    //       fontWeight: FontWeight.w400,
+                    //       fontSize: 14,
+                    //       color: MyColors.thirdTextColor,
+                    //     ),
+                    //   ),
+                    // ),
+                    // IconButton(
+                    //   onPressed: () {},
+                    //   icon: Icon(
+                    //     Icons.arrow_forward_ios,
+                    //     color: MyColors.thirdTextColor,
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(height: 5,),
@@ -396,7 +414,7 @@ class _HomePageState extends State<HomePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => GoBusinessHomePage(
-                                business: correspondingBusiness,
+                                business: correspondingBusiness, businessId: correspondingBusiness.id,
                               ),
                             ),
                           );
@@ -449,7 +467,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     })
-                        .take(5)
+
                         .toList(),
                   ),
                 ),

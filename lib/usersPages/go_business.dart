@@ -21,7 +21,9 @@ import 'package:url_launcher/url_launcher.dart';
 class GoBusinessHomePage extends StatefulWidget {
   final Business business;
 
-  GoBusinessHomePage({required this.business, Key? key}) : super(key: key);
+  final String businessId; // Business ID
+
+  GoBusinessHomePage({required this.business, Key? key, required this.businessId}) : super(key: key);
 
   @override
   State<GoBusinessHomePage> createState() => _GoBusinessHomePageState();
