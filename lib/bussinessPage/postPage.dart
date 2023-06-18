@@ -10,7 +10,8 @@ import '../components/colors.dart';
 import 'createPostPhoto.dart';
 
 class PostPage extends StatefulWidget {
-  const PostPage({Key? key}) : super(key: key);
+  final String businessId;
+  const PostPage({Key? key, required this.businessId}) : super(key: key);
 
   @override
   State<PostPage> createState() => _PostPageState();
@@ -19,6 +20,7 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
+  late bool _isUserBusinessOwner;
 
   List<PickedFile> _postPhotos = [];
 
@@ -45,7 +47,7 @@ class _PostPageState extends State<PostPage> {
             child: TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                 _uploadPostPhotos(_auth.currentUser!.uid);// Dialog kapatılıyor
+                 _uploadPostPhotos(widget.businessId);// Dialog kapatılıyor
                  // Fotoğrafı yükleme işlemi başlatılıyor
               },
               child: Text('OK'),
@@ -86,7 +88,7 @@ class _PostPageState extends State<PostPage> {
     if (_postPhotos.isEmpty) {
       final userDoc = await _firestore
           .collection('businesses')
-          .doc(_auth.currentUser!.uid)
+          .doc(widget.businessId)
           .get();
       final businessData = userDoc.data();
 
@@ -95,6 +97,8 @@ class _PostPageState extends State<PostPage> {
           _postPhotos = (businessData['post_photos'] as List<dynamic>)
               .map((postPhotoPath) => PickedFile(postPhotoPath))
               .toList();
+          print('asds');
+
         });
       }
     }
@@ -104,6 +108,7 @@ class _PostPageState extends State<PostPage> {
 
     super.initState();
     fetchBusinessData();
+    _isUserBusinessOwner = _auth.currentUser!.uid == widget.businessId;
 
   }
 
@@ -115,8 +120,9 @@ class _PostPageState extends State<PostPage> {
         child: Column(
           children: [
             SizedBox(
-              height: 60,
+              height: 20,
             ),
+            if(_isUserBusinessOwner)
             Container(
               width: 345,
               height: 48,
@@ -135,11 +141,8 @@ class _PostPageState extends State<PostPage> {
                 ),
               ),
             ),
-            SizedBox(height: 20,),
 
-            SizedBox(
-              height: 16,
-            ),
+
             Column(
               children: [
                 Container(

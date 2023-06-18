@@ -19,16 +19,13 @@ class Business {
   final String name;
   final String profile_image;
   final List<String> coverPhotos;
-  final List<String> postPhotos;
-  final List<String> eventPhotos;
+
   final String id;
 
   Business({
     required this.name,
     required this.profile_image,
     required this.coverPhotos,
-    required this.postPhotos,
-    required this.eventPhotos,
     required this.id,
   });
 }
@@ -37,11 +34,14 @@ class Event {
 
   final String eventPhoto;
   final String businessId;
+  final String business_name;
 
   Event({
 
     required this.eventPhoto,
     required this.businessId,
+    required this.business_name,
+
   });
 }
 
@@ -64,10 +64,12 @@ class _HomePageState extends State<HomePage> {
     snapshot.docs.forEach((doc) {
       String businessId = doc['businness_id'];
       String eventPhoto = doc['event_photo'];
+      String business_name = doc['business_name'];
 
       Event event = Event(
         businessId: businessId,
         eventPhoto: eventPhoto,
+        business_name: business_name,
       );
       eventList.add(event);
     });
@@ -135,27 +137,20 @@ class _HomePageState extends State<HomePage> {
       if (doc['cover_photos'] != null && doc['cover_photos'] is List) {
         coverPhotos = List<String>.from(doc['cover_photos']);
       }
-      List<String> postPhotos = [];
-      if (doc['post_photos'] != null && doc['post_photos'] is List) {
-        postPhotos =
-            await Future<List<String>>.delayed(Duration(seconds: 0), () {
-          return List<String>.from(doc['post_photos']);
-        });
-      }
-      List<String> eventPhotos = [];
-      if (doc['event_photos'] != null && doc['event_photos'] is List) {
-        eventPhotos =
-            await Future<List<String>>.delayed(Duration(seconds: 0), () {
-          return List<String>.from(doc['event_photos']);
-        });
-      }
+      // List<String> postPhotos = [];
+      // if (doc['post_photos'] != null && doc['post_photos'] is List) {
+      //   postPhotos =
+      //       await Future<List<String>>.delayed(Duration(seconds: 0), () {
+      //     return List<String>.from(doc['post_photos']);
+      //   });
+      // }
+
 
       Business business = Business(
         name: name,
         profile_image: imageUrl,
         coverPhotos: coverPhotos,
-        postPhotos: postPhotos,
-        eventPhotos: eventPhotos,
+        // postPhotos: postPhotos,
         id: id,
       );
       businessList.add(business);
@@ -441,7 +436,7 @@ class _HomePageState extends State<HomePage> {
                                   left: 70,
                                   bottom: 10,
                                   child: Text(
-                                    correspondingBusiness.name,
+                                    event.business_name,
                                     style: TextStyle(
                                       color: MyColors.backGroundkColor,
                                       fontSize: 20,
