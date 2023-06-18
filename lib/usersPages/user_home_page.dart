@@ -34,11 +34,14 @@ class Event {
 
   final String eventPhoto;
   final String businessId;
+  final String business_name;
 
   Event({
 
     required this.eventPhoto,
     required this.businessId,
+    required this.business_name,
+
   });
 }
 
@@ -61,10 +64,12 @@ class _HomePageState extends State<HomePage> {
     snapshot.docs.forEach((doc) {
       String businessId = doc['businness_id'];
       String eventPhoto = doc['event_photo'];
+      String business_name = doc['business_name'];
 
       Event event = Event(
         businessId: businessId,
         eventPhoto: eventPhoto,
+        business_name: business_name,
       );
       eventList.add(event);
     });
@@ -431,7 +436,7 @@ class _HomePageState extends State<HomePage> {
                                   left: 70,
                                   bottom: 10,
                                   child: Text(
-                                    correspondingBusiness.name,
+                                    event.business_name,
                                     style: TextStyle(
                                       color: MyColors.backGroundkColor,
                                       fontSize: 20,
