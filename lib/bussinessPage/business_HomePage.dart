@@ -15,12 +15,9 @@ import 'package:url_launcher/url_launcher.dart';
 class BusinessHomePage extends StatefulWidget {
   const BusinessHomePage({Key? key}) : super(key: key);
 
-
-
   @override
   State<BusinessHomePage> createState() => _BusinessHomePageState();
 }
-
 
 class _BusinessHomePageState extends State<BusinessHomePage>
     with SingleTickerProviderStateMixin {
@@ -32,25 +29,39 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   List<PickedFile> _coverPhotos = [];
   String _description = '';
   String _openFrom = '';
-  String _Interest = '';
-  String _options = '';
   String _location = '';
   String _price = '';
   String _selectedTags = '';
   String _selectedOptions = '';
+    double _totalRating = 0.0; // Total rate
 
   // Map<String, bool> selectedPricing = {};
 
   void initState() {
     tabController = TabController(length: 3, vsync: this);
     fetchBusinessData();
+        fetchTotalRating(); // Fetch total rating value
+
     // fetchPricing();
 
     super.initState();
   }
 
+ // Fetch total rating value
+  Future<void> fetchTotalRating() async {
+    final businessDoc = await _firestore
+        .collection('businesses')
+        .doc(_auth.currentUser!.uid)
+        .get();
+    final businessData = businessDoc.data();
 
-
+    if (businessData != null) {
+      final totalRating = businessData['totalRating'] ?? 0.0;
+      setState(() {
+        _totalRating = totalRating.toDouble();
+      });
+    }
+  }
   @override
   void dispose() {
     tabController.dispose();
@@ -97,14 +108,14 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   //     print(selectedPricing);
   //   });
   // }
- _launchURL() async {
-  final url = _location.replaceAll('"', '');
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Site açılamadı: $url';
+  _launchURL() async {
+    final url = _location.replaceAll('"', '');
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Site açılamadı: $url';
+    }
   }
-}
 
 
   Future<void> fetchBusinessData() async {
@@ -125,7 +136,9 @@ class _BusinessHomePageState extends State<BusinessHomePage>
         _selectedTags = businessData['selectedTags'] ?? '';
         _selectedOptions = businessData['selectedOptions'] ?? '';
         _location = businessData['location'] ?? '';
-        print(_location);
+        _description = businessData['description'] ?? '';
+        _openFrom = businessData['openFrom'] ?? '';
+
       });
     }
   }
@@ -135,97 +148,160 @@ class _BusinessHomePageState extends State<BusinessHomePage>
     return Scaffold(
       backgroundColor: MyColors.backGroundkColor,
       body: Container(
-          height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                Container(
-                  width: 393,
-                  height: 252,
-                  color: MyColors.thirdTextColor,
-                  child: Stack(
-                    children: [
-                      if (_coverPhotos.isNotEmpty)
-                        ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _coverPhotos.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              width: 393,
-                              height: 252,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(_coverPhotos[index].path),
-                                  fit: BoxFit.cover,
-                                ),
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              Container(
+                width: 393,
+                height: 252,
+                color: MyColors.thirdTextColor,
+                child: Stack(
+                  children: [
+                    if (_coverPhotos.isNotEmpty)
+                      ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _coverPhotos.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            width: 393,
+                            height: 252,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(_coverPhotos[index].path),
+                                fit: BoxFit.cover,
                               ),
-                            );
-                          },
-                        ),
-                      if (_coverPhotos.isEmpty)
-                        Center(
-                          child: Text('No cover images selected'),
-                        ),
-                      Positioned(
-                        top: 68,
-                        right: 200,
-                        child: Container(
-                          child: Padding(
-                            padding: const EdgeInsets.all(115.0),
-                            child: CircleAvatar(
-                              backgroundImage: _profileImageUrl.isNotEmpty
-                                  ? NetworkImage(_profileImageUrl)
-                                  : null,
-                              radius: 34,
                             ),
+                          );
+                        },
+                      ),
+                    if (_coverPhotos.isEmpty)
+                      Center(
+                        child: Text('No cover images selected'),
+                      ),
+                    Positioned(
+                      top: 68,
+                      right: 200,
+                      child: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(115.0),
+                          child: CircleAvatar(
+                            backgroundImage: _profileImageUrl.isNotEmpty
+                                ? NetworkImage(_profileImageUrl)
+                                : null,
+                            radius: 34,
                           ),
                         ),
                       ),
-                    ],
-
-                  ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 12,
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              Text(
+                _businessName,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: MyColors.thirdTextColor,
                 ),
-
-                Text(
-                  _businessName,
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                    color: MyColors.thirdTextColor,
-                  ),
-                ),
-
-                Container(
-                  width: 345,
-                  height: 194,
-                  color: MyColors.backGroundkColor,
-                child: Padding(
-                     padding: const EdgeInsets.all(8.0),
-                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [
-                         Row(
-                           crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              SizedBox(height: 12,),
+              Text(_description,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: MyColors.secondaryTextColor,
+                ),),
+               Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 10,),
+                          Column(
                             children: [
-                              Column(
-                                children: [
                               Text(
-                                'Price range:' + _price,
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      color: MyColors.thirdTextColor,
-                                    ),
-                                  ),
-                                ],
+                                'Price ranges',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: MyColors.secondaryTextColor,
+                                ),
                               ),
-                              SizedBox(width: 112),
-                          Text(
-                            'Interests:' + _formatTags(_selectedTags),
+                              SizedBox(height: 5,),
+                              Text(_price,
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: MyColors.thirdTextColor,
+                                ),),
+                            ],
+                          ),
+                          SizedBox(width: 152),
+                          Column(
+                            children: [
+                              Text(
+                                'Interests' ,
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: MyColors.secondaryTextColor,
+                                ),
+                              ),
+                              SizedBox(height: 5,),
+                              Text(_formatTags(_selectedTags) +' ',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: MyColors.thirdTextColor,
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 23),
+                      Row(
+                        children: [
+                          SizedBox(width: 10,),
+                          Column(
+                            children: [
+                              Text('Open From',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: MyColors.secondaryTextColor,
+                                ),
+                              ),
+                              SizedBox(height: 5,),
+                              Text(_openFrom,
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: MyColors.thirdTextColor,
+                                ),),
+                            ],
+                          ),
+                          SizedBox( width: 162,),
+                          Column(
+                            children: [
+                              Text(
+                                'Options' ,
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: MyColors.secondaryTextColor,
+                                ),
+                              ),
+                              SizedBox(height: 5,),
+                              Text(_Formatoptions(_selectedOptions),
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 12,
@@ -234,77 +310,93 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                               ),
                             ],
                           ),
-                         SizedBox(height: 23),
-                      Text(
-                        'Options' + _Formatoptions(_selectedOptions),
-                           style: GoogleFonts.inter(
-                             fontWeight: FontWeight.w400,
-                             fontSize: 12,
-                             color: MyColors.thirdTextColor,
-                           ),
-                         ),
 
+                        ],
+                      ),
+                      SizedBox(height: 20,),
+                      Row(
+                        children: [
 
-                       ],
-                     ),
-                   ),
-                ),
-              ElevatedButton(
-                child: Text('Siteyi Aç'),
-                onPressed: () {
-                  _launchURL();
-                },
-              ),
-              // PricingWidget(pricing: selectedPricing),
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  decoration: const BoxDecoration(
-                    color: MyColors.backGroundkColor,
+                        TotalRatingWidget(totalRating: _totalRating), // Added TotalRatingWidget
+                                                SizedBox(width: 140,),
+
+                          
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(MyColors.primaryColor), // Set the button background color
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0), // Set the button border radius
+                                ),
+                              ),
+                            ),
+                            onPressed: _launchURL,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [ 
+                                Icon(Icons.location_on_outlined), // Add the icon to the left of the text
+                                SizedBox(width: 8.0), // Add spacing between the icon and text
+                                Text('Location'), // Button text
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    ],
                   ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 55),
-                      Padding(
-                        padding: EdgeInsets.all(5),
-                        child: Container(
-                          decoration: BoxDecoration(
+                ),
+
+
+              // PricingWidget(pricing: selectedPricing),
+              Container(
+                height: MediaQuery.of(context).size.height,
+                decoration: const BoxDecoration(
+                  color: MyColors.backGroundkColor,
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 55),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Container(
+                        decoration: BoxDecoration(
                             color: MyColors.backGroundkColor,
                             borderRadius: BorderRadius.circular(48),
                             border: Border.all(
                               color: MyColors.thirdTextColor,
                               width: 1,
                             )),
-                          child: TabBar(
-                            indicatorWeight: 1,
-                            labelColor: MyColors.thirdTextColor,
-                            controller: tabController,
-                            indicator: BoxDecoration(
-                              color: MyColors.primaryColor,
-                              borderRadius: BorderRadius.circular(48),
-                              border: Border.all(
-                                width: 2,
-                              ),
+                        child: TabBar(
+                          indicatorWeight: 1,
+                          labelColor: MyColors.thirdTextColor,
+                          controller: tabController,
+                          indicator: BoxDecoration(
+                            color: MyColors.primaryColor,
+                            borderRadius: BorderRadius.circular(48),
+                            border: Border.all(
+                              width: 2,
                             ),
-                            tabs: [
-                              Tab(
-                                text: 'Posts',
-                              ),
-                              Tab(
-                                text: 'Events',
-                              ),
-                              Tab(
-                                text: 'Comments',
-                              ),
-                            ],
                           ),
+                          tabs: [
+                            Tab(
+                              text: 'Posts',
+                            ),
+                            Tab(
+                              text: 'Events',
+                            ),
+                            Tab(
+                              text: 'Comments',
+                            ),
+                          ],
                         ),
                       ),
-
-                      Container(
-                        child: Expanded(
-                          child: TabBarView(
-                            controller: tabController,
-                            children: [
+                    ),
+                    Container(
+                      child: Expanded(
+                        child: TabBarView(
+                          controller: tabController,
+                          children: [
                             PostPage(
                               businessId: _auth.currentUser!.uid,
                             ),
@@ -314,17 +406,17 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                             CommentPage(
                               businessId: _auth.currentUser!.uid,
                             ),
-                            ],
-                          ),
+                          ],
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }
@@ -357,6 +449,32 @@ class PricingWidget extends StatelessWidget {
         priceText,
         style: TextStyle(fontSize: 20),
       ),
+    );
+  }
+}
+class TotalRatingWidget extends StatelessWidget {
+  final double totalRating;
+
+  const TotalRatingWidget({required this.totalRating});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          Icons.star,
+          color: Colors.yellow,
+        ),
+        SizedBox(width: 4),
+        Text(
+          totalRating.toStringAsFixed(1),
+
+          style: TextStyle(
+            color:MyColors.whiteColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -418,4 +536,3 @@ class PricingWidget extends StatelessWidget {
 //     ),
 //   ),
 // ),
-
