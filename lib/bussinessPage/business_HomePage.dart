@@ -24,6 +24,14 @@ class _BusinessHomePageState extends State<BusinessHomePage>
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   String _profileImageUrl = '';
+  String _description = '';
+  String _openFrom = '';
+  String _Interest = '';
+  String _options = '';
+  String _location = '';
+
+
+
   String _businessName = '';
   late TabController tabController;
   List<PickedFile> _coverPhotos = [];
@@ -102,6 +110,21 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                         Center(
                           child: Text('No cover images selected'),
                         ),
+                    Positioned(
+                      top: 68,
+                      right: 200,
+                      child: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(115.0),
+                          child: CircleAvatar(
+                            backgroundImage: _profileImageUrl.isNotEmpty
+                                ? NetworkImage(_profileImageUrl)
+                                : null,
+                            radius: 34,
+                          ),
+                        ),
+                      ),
+                    ),
                     ],
 
                   ),
@@ -122,7 +145,7 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                   width: 345,
                   height: 194,
                   color: MyColors.backGroundkColor,
-                   child:Padding(
+                child: Padding(
                      padding: const EdgeInsets.all(8.0),
                      child: Column(
                        crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +165,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                                 ],
                               ),
                               SizedBox(width: 112),
-                              Text('Interests',
+                          Text(
+                            'Interests',
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 12,
@@ -152,7 +176,8 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                             ],
                           ),
                          SizedBox(height: 23),
-                         Text('Interests',
+                      Text(
+                        'Interests',
                            style: GoogleFonts.inter(
                              fontWeight: FontWeight.w400,
                              fontSize: 12,
@@ -215,7 +240,9 @@ class _BusinessHomePageState extends State<BusinessHomePage>
                             children: [
                               PostPage(),
                               EventPage(),
-                              CommentPage(businessId:_auth.currentUser!.uid ,),
+                            CommentPage(
+                              businessId: _auth.currentUser!.uid,
+                            ),
                             ],
                           ),
                         ),

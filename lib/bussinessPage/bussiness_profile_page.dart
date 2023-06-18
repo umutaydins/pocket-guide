@@ -35,9 +35,10 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
     print('aa');
     if (businessData != null) {
       setState(() {
-        // _profileImageUrl = businessData['profile_picture'] ?? '';
+        _profileImageUrl = businessData['profile_picture'] ?? '';
         _businessName = businessData['name'] ?? '';
         _email = businessData['email'] ?? '';
+
       });
     }
   }
@@ -75,11 +76,11 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CircleAvatar(
-                      radius: 30.0,
-                      backgroundImage: _profileImageUrl.isNotEmpty
-                          ? NetworkImage(_profileImageUrl)
-                          : null,
-                    ),
+                            backgroundImage: _profileImageUrl.isNotEmpty
+                                ? NetworkImage(_profileImageUrl)
+                                : null,
+                            radius: 34,
+                          ),
                     SizedBox(width: 13.0),
 
                     //Bussiness information
@@ -87,7 +88,7 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('sadsadsad'+
+                          Text(
                             _businessName,
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w600,
@@ -169,6 +170,40 @@ class _BussinessProfilePageState extends State<BussinessProfilePage> {
               //LOGOUT
               SizedBox(
                 height: 23,
+              ),
+                  Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/small_box.svg',
+                    color: MyColors.whiteColor,
+                    height: 24,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(
+                      'Edit interests',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color: MyColors.thirdTextColor,
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(right: 188)),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>  EditBusinessInterestPage(),
+                        ),
+                      );
+                    },
+                    icon: SvgPicture.asset(
+                      'assets/icons/arrow.svg',
+                      height: 18,
+                    ),
+                  ),
+                ],
               ),
               Row(
                 children: [

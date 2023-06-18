@@ -28,7 +28,6 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-      
 
   LatLng? selectedLocation;
   PickedFile? _profileImage;
@@ -36,7 +35,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
-  List<PickedFile> _coverImages = []; // Changed to a list of PickedFiles
+  List<PickedFile> _coverImages = [];
   List<String> tags = ['bars', 'coffee', 'karaoke', 'restaurants'];
   List<String> pricing = ['cheap', 'standard', 'expensive'];
 
@@ -44,55 +43,129 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   Map<String, bool> selectedPricing = {};
 
   void registerBusiness() async {
-    if (passwordController.text == confirmPasswordController.text) {
-      try {
-        UserCredential userCredential =
-            await _auth.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
-        );
+    if (passwordController.text != confirmPasswordController.text) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Passwords do not match.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
 
-        userCredential.user!.updateProfile(displayName: nameController.text);
+    if (_profileImage == null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Please select a profile image.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
 
-        await _firestore
-            .collection('businesses')
-            .doc(userCredential.user!.uid)
-            .set({
-          'name': nameController.text,
-          // 'description': descriptionController.text,
-          // 'location': selectedLocation != null
-          //     ? GeoPoint(
-          //         selectedLocation!.latitude, selectedLocation!.longitude)
-          //     : null,
-          //'tags': tagsController.text.split(","),
-          'profile_picture': '',
-          'email': emailController.text,
-          'password': passwordController.text,
-          'phoneNumber': phoneController.text,
-          'description': descriptionController.text,
-          'tags': selectedTags,
-          'pricing': selectedPricing,
-          'detailsCompleted': true,
+    if (_coverImages.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Please select at least one cover image.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
 
-          'detailsCompleted': true, // Set detailsCompleted as false
-        });
-        if (_profileImage != null) {
-          await _uploadProfileImage(userCredential.user!.uid);
-        }
-        if (_coverImages.isNotEmpty) {
-          await _uploadCoverImages(userCredential.user!.uid);
-        }
-        // Navigate to the BusinessDetailedInformationPage after successful registration
-        print('got');
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => BusinessAppPage(),
-          ),
-        );
-        print('hop');
-      } catch (e) {
-        print(e);
-      }
+    if (emailController.text.isEmpty ||
+        nameController.text.isEmpty ||
+        descriptionController.text.isEmpty ||
+        phoneController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Please fill in all the required fields.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      userCredential.user!.updateProfile(displayName: nameController.text);
+
+      await _firestore.collection('businesses').doc(userCredential.user!.uid).set({
+        'name': nameController.text,
+        'profile_picture': '',
+        'email': emailController.text,
+        'phoneNumber': phoneController.text,
+        'description': descriptionController.text,
+        'tags': selectedTags,
+        'pricing': selectedPricing,
+        'detailsCompleted': true,
+      });
+
+      await _uploadProfileImage(userCredential.user!.uid);
+      await _uploadCoverImages(userCredential.user!.uid);
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => BusinessAppPage(),
+        ),
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -106,19 +179,17 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
   }
 
   Future<void> _uploadProfileImage(String userId) async {
-    if (_profileImage != null) {
-      final file = File(_profileImage!.path);
-      final storageRef =
-          FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
+    final file = File(_profileImage!.path);
+    final storageRef =
+        FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
 
-      await storageRef.putFile(file);
+    await storageRef.putFile(file);
 
-      final downloadUrl = await storageRef.getDownloadURL();
+    final downloadUrl = await storageRef.getDownloadURL();
 
-      await _firestore.collection('businesses').doc(userId).update({
-        'profile_picture': downloadUrl,
-      });
-    }
+    await _firestore.collection('businesses').doc(userId).update({
+      'profile_picture': downloadUrl,
+    });
   }
 
   Future<void> _pickCoverImage() async {
@@ -126,7 +197,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
     final pickedImage = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
-      _coverImages.add(pickedImage!); // Add the picked image to the list
+      _coverImages.add(pickedImage!);
     });
   }
 
@@ -145,15 +216,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
       });
     }
   }
-  // void openMapScreen() async {
-  //   final LatLng? selectedLocation = await Navigator.of(context).push(
-  //     MaterialPageRoute(builder: (context) => MapScreen()),
-  //   );
 
-  //   setState(() {
-  //     this.selectedLocation = selectedLocation;
-  //   });
-  // }
   @override
   void initState() {
     super.initState();
@@ -175,22 +238,18 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
-                  // Profile Photo Selection
                   onTap: _pickProfileImage,
-
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: _profileImage != null
                         ? FileImage(File(_profileImage!.path))
                         : null,
-                    child:
-                        _profileImage == null ? Icon(Icons.add_a_photo) : null,
+                    child: _profileImage == null ? Icon(Icons.add_a_photo) : null,
                   ),
                 ),
-                // Profile Photo Selection
 
                 SizedBox(height: 16),
-                // Name Text Field
+
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
@@ -198,7 +257,6 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                   ),
                 ),
 
-                // Email Text Field
                 TextField(
                   controller: emailController,
                   decoration: InputDecoration(
@@ -206,7 +264,6 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                   ),
                 ),
 
-                // Password Text Field
                 TextField(
                   controller: passwordController,
                   obscureText: true,
@@ -215,7 +272,6 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                   ),
                 ),
 
-                // Confirm Password Text Field
                 TextField(
                   controller: confirmPasswordController,
                   obscureText: true,
@@ -232,7 +288,9 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                     labelText: 'Phone Number',
                   ),
                 ),
+
                 SizedBox(height: 16),
+
                 TextField(
                   controller: descriptionController,
                   maxLines: 10,
@@ -241,7 +299,9 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                     alignLabelWithHint: true,
                   ),
                 ),
+
                 SizedBox(height: 16),
+
                 Wrap(
                   spacing: 8.0,
                   runSpacing: 4.0,
@@ -257,7 +317,9 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                     );
                   }).toList(),
                 ),
+
                 SizedBox(height: 16),
+
                 Wrap(
                   spacing: 8.0,
                   runSpacing: 4.0,
@@ -273,7 +335,6 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                     );
                   }).toList(),
                 ),
-                // Confirm Details Button
 
                 GestureDetector(
                   onTap: _pickCoverImage,
@@ -294,7 +355,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                 SizedBox(
                   height: 20,
                 ),
-                Text('dssda'),
+
                 if (_coverImages.isNotEmpty)
                   Wrap(
                     spacing: 8,
@@ -312,7 +373,7 @@ class _BusinessRegisterPageState extends State<BusinessRegisterPage> {
                       );
                     }).toList(),
                   ),
-                // Register Button
+
                 ElevatedButton(
                   onPressed: registerBusiness,
                   child: Text('Register'),
