@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pocket_guide/components/colors.dart';
-import 'package:pocket_guide/usersPages/bussiness_listing.dart';
 import 'package:pocket_guide/usersPages/user_profile_page.dart';
 
 import 'user_expolere_page.dart';

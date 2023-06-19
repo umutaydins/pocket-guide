@@ -4,14 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pocket_guide/bussinessPage/edit_bussiness_profile.dart';
 import 'package:pocket_guide/usersPages/user_edit_interests.dart';
 import 'package:pocket_guide/usersPages/user_edit_profile.dart';
-import 'package:pocket_guide/usersPages/user_edit_interests.dart';
 import '../components/colors.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class UserProfilePage extends StatefulWidget {
   UserProfilePage({Key? key}) : super(key: key);

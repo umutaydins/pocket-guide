@@ -2,11 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_guide/bussinessPage/business_AppPage.dart';
-import 'package:pocket_guide/registerPages/bussinesRegisterPages/bussiness_detailed_info.dart';
 import 'package:pocket_guide/usersPages/user_app_page.dart';
-import 'aut_page.dart';
 import 'login_or_register.dart';
-import 'login_page.dart';
 
 class AuthUserBusinessPage extends StatelessWidget {
   const AuthUserBusinessPage({Key? key}) : super(key: key);

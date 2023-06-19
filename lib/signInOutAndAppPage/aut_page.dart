@@ -1,14 +1,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_guide/bussinessPage/business_AppPage.dart';
-import 'package:pocket_guide/bussinessPage/business_HomePage.dart';
-import 'package:pocket_guide/bussinessPage/postPage.dart';
-import 'package:pocket_guide/registerPages/bussinesRegisterPages/bussines_register.dart';
-import 'package:pocket_guide/registerPages/bussinesRegisterPages/bussiness_detailed_info.dart';
-import 'package:pocket_guide/signInOutAndAppPage/login_page.dart';
-import '../firstLoginPage/entry.dart';
-import 'app_page.dart';
+
 import 'auth_user_business_page.dart';
 import 'login_or_register.dart';
 

@@ -1,14 +1,9 @@
-import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pocket_guide/bussinessPage/commentPage.dart';
 import 'package:pocket_guide/components/colors.dart';
-import 'package:pocket_guide/usersPages/go_event_page.dart';
-import 'package:pocket_guide/usersPages/go_post_page.dart';
+
 import 'package:pocket_guide/usersPages/user_home_page.dart';
 
 import '../bussinessPage/eventPage.dart';

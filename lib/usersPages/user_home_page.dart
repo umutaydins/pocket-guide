@@ -1,12 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pocket_guide/components/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_guide/usersPages/componentsU/fetchtags.dart';
-import '../bussinessPage/business_HomePage.dart';
-import 'bussiness_searchbar.dart';
 import 'go_business.dart';
 
 class HomePage extends StatefulWidget {
